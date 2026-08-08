@@ -1,0 +1,32 @@
+# Environment variables
+.env
+.env.*
+
+# Keep environment template
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Databases / local data
+*.sqlite3
+*.db
