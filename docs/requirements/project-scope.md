@@ -76,7 +76,6 @@ The system should be:
 - Easy to run locally
 - Documented for other developers
 
-Sensitive information and credentials must never be committed to the public repository.
 
 ---
 
@@ -145,4 +144,3 @@ Phase 2 is complete when:
 - Non-functional requirements are documented
 - v0.1 scope is clearly limited
 - Failure cases are documented
-- Another developer can understand what v0.1 will build without reading the source code
