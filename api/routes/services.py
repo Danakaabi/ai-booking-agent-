@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from api.schemas.service import Service
+from database.repositories.services import get_all_services
 
 
 router = APIRouter(
@@ -11,11 +12,6 @@ router = APIRouter(
 
 @router.get("", response_model=list[Service])
 def get_services() -> list[Service]:
-    return [
-        Service(
-            name="Haircut",
-            duration_minutes=60,
-            price=85.0,
-            active=True,
-        )
-    ]
+    services = get_all_services()
+
+    return [Service(**service) for service in services]
