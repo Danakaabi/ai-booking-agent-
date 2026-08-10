@@ -37,4 +37,4 @@ AI Booking Agent — Booking Domain Model
 * Staff → has many Bookings
 * Service → has many Bookings
 * Conversation → has many Messages
-* Conversation → may relate to a Customergit
+* Conversation → may relate to a Customer
