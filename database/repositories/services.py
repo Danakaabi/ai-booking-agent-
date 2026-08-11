@@ -1,5 +1,4 @@
 from typing import Any
-from api.routes import services
 from database.connection import database
 
 services_collection = database["services"]
