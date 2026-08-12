@@ -24,3 +24,15 @@ def test_create_booking() -> None:
     assert data["customer_name"] == "Dana"
     assert data["service_id"] == "6a779ed59b6b145fcfe108ab"
     assert "id" in data
+
+
+def test_get_bookings() -> None:
+    response = client.get("/bookings")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert isinstance(data, list)
+    assert len(data) > 0
+    assert "id" in data[0]

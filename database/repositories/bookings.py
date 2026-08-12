@@ -14,3 +14,12 @@ def create_booking(booking: BookingCreate) -> dict[str, Any]:
     booking_data["id"] = str(result.inserted_id)
 
     return booking_data
+
+
+def get_all_bookings() -> list[dict[str, Any]]:
+    bookings = list(bookings_collection.find())
+    for booking in bookings:
+       booking["id"] = str(booking.pop("_id"))
+
+
+    return bookings
