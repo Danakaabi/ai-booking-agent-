@@ -2,7 +2,7 @@ from typing import Any
 
 from api.schemas.booking import BookingCreate
 from database.connection import database
-
+from bson import ObjectId
 
 bookings_collection = database["bookings"]
 
@@ -21,5 +21,16 @@ def get_all_bookings() -> list[dict[str, Any]]:
     for booking in bookings:
        booking["id"] = str(booking.pop("_id"))
 
-
     return bookings
+
+def get_booking_by_id(booking_id: str) -> dict[str, Any] | None:
+    booking = bookings_collection.find_one(
+        {"_id": ObjectId(booking_id)}
+    )
+
+    if booking is None:
+        return None
+
+    booking["id"] = str(booking.pop("_id"))
+
+    return booking
