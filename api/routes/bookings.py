@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
 
-from api.schemas.booking import BookingCreate
+from api.schemas.booking import BookingCreate, BookingUpdate
 from database.repositories.bookings import (
     create_booking,
     get_all_bookings,
     get_booking_by_id,
+    update_booking,
 )
 
 router = APIRouter(
@@ -32,5 +33,24 @@ def get_booking(booking_id: str) -> dict:
         status_code=404,
         detail="Booking not found"
     )
+
+    return booking
+
+
+@router.patch("/{booking_id}")
+def update_booking_route(
+    booking_id: str,
+    update: BookingUpdate,
+) -> dict:
+    booking = update_booking(
+        booking_id,
+        update,
+    )
+
+    if booking is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Booking not found",
+        )
 
     return booking
