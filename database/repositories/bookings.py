@@ -1,6 +1,5 @@
 from typing import Any
-
-from api.schemas.booking import BookingCreate,BookingUpdate
+from api.schemas.booking import BookingCreate, BookingUpdate
 from database.connection import database
 from bson import ObjectId
 
@@ -45,6 +44,32 @@ def update_booking(
     result = bookings_collection.update_one(
         {"_id": ObjectId(booking_id)},
         {"$set": update_data},
+    )
+
+    if result.matched_count == 0:
+        return None
+
+    return get_booking_by_id(booking_id)
+
+
+
+def cancel_booking(booking_id: str) -> dict[str, Any] | None:
+    result = bookings_collection.update_one(
+        {"_id": ObjectId(booking_id)},
+        {"$set": {"status": "cancelled"}},
+    )
+
+    if result.matched_count == 0:
+        return None
+
+    return get_booking_by_id(booking_id)
+
+
+
+def cancel_booking(booking_id: str) -> dict[str, Any] | None:
+    result = bookings_collection.update_one(
+        {"_id": ObjectId(booking_id)},
+        {"$set": {"status": "cancelled"}},
     )
 
     if result.matched_count == 0:

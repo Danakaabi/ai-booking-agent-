@@ -6,6 +6,7 @@ from database.repositories.bookings import (
     get_all_bookings,
     get_booking_by_id,
     update_booking,
+    cancel_booking,
 )
 
 router = APIRouter(
@@ -46,6 +47,19 @@ def update_booking_route(
         booking_id,
         update,
     )
+
+    if booking is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Booking not found",
+        )
+
+    return booking
+
+
+@router.patch("/{booking_id}/cancel")
+def cancel_booking_route(booking_id: str) -> dict:
+    booking = cancel_booking(booking_id)
 
     if booking is None:
         raise HTTPException(

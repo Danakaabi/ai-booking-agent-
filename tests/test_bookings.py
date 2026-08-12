@@ -119,3 +119,38 @@ def test_update_booking_not_found() -> None:
     data = response.json()
 
     assert data["detail"] == "Booking not found"
+
+
+
+def test_cancel_booking() -> None:
+    create_response = client.post(
+        "/bookings",
+        json={
+            "service_id": "6a779ed59b6b145fcfe108ab",
+            "customer_name": "Cancel Test",
+            "customer_phone": "0500000000",
+            "booking_datetime": "2026-08-25T17:00:00",
+        },
+    )
+
+    assert create_response.status_code == 200
+
+    booking_id = create_response.json()["id"]
+
+    response = client.patch(f"/bookings/{booking_id}/cancel")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["id"] == booking_id
+    assert data["status"] == "cancelled"
+
+
+def test_cancel_booking_not_found() -> None:
+    response = client.patch(
+        "/bookings/000000000000000000000000/cancel"
+    )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Booking not found"

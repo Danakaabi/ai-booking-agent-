@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from typing import Literal
 from pydantic import BaseModel, Field
 
 
@@ -8,7 +8,7 @@ class BookingCreate(BaseModel):
     customer_name: str = Field(..., min_length=2, max_length=100)
     customer_phone: str = Field(..., min_length=8, max_length=20)
     booking_datetime: datetime
-
+    status: Literal["confirmed", "cancelled"] = "confirmed"
 
 
 class BookingUpdate(BaseModel):
