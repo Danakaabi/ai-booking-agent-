@@ -65,14 +65,14 @@ def cancel_booking(booking_id: str) -> dict[str, Any] | None:
     return get_booking_by_id(booking_id)
 
 
-
-def cancel_booking(booking_id: str) -> dict[str, Any] | None:
-    result = bookings_collection.update_one(
-        {"_id": ObjectId(booking_id)},
-        {"$set": {"status": "cancelled"}},
+def get_confirmed_bookings() -> list[dict[str, Any]]:
+    bookings = list(
+        bookings_collection.find(
+            {"status": "confirmed"}
+        )
     )
 
-    if result.matched_count == 0:
-        return None
+    for booking in bookings:
+        booking["id"] = str(booking.pop("_id"))
 
-    return get_booking_by_id(booking_id)
+    return bookings

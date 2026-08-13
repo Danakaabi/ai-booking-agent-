@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-
+from ai_core.booking_engine import booking_has_conflict
 from api.schemas.booking import BookingCreate, BookingUpdate
 from database.repositories.bookings import (
     create_booking,
@@ -14,11 +14,15 @@ router = APIRouter(
     tags=["Bookings"],
 )
 
-
 @router.post("")
 def create_booking_route(booking: BookingCreate) -> dict:
-    return create_booking(booking)
+    if booking_has_conflict(booking):
+        raise HTTPException(
+            status_code=409,
+            detail="Booking time conflicts with an existing booking",
+        )
 
+    return create_booking(booking)
 
 @router.get("")
 def get_bookings() -> list[dict]:
