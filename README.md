@@ -20,7 +20,7 @@
   <img src="https://img.shields.io/badge/MongoDB-Database-47A248?logo=mongodb&logoColor=white" alt="MongoDB">
   <img src="https://img.shields.io/badge/PyMongo-Driver-47A248" alt="PyMongo">
   <img src="https://img.shields.io/badge/Pydantic-Validation-E92063" alt="Pydantic">
-  <img src="https://img.shields.io/badge/Pytest-10%20Passing-0A9EDC?logo=pytest&logoColor=white" alt="Tests">
+  <img src="https://img.shields.io/badge/Pytest-36%20Passing-0A9EDC?logo=pytest&logoColor=white" alt="Tests">
   <img src="https://img.shields.io/badge/Status-Active%20Development-orange" alt="Status">
 </p>
 
@@ -35,6 +35,8 @@
 - REST API design
 - MongoDB and NoSQL data modeling
 - Booking workflows and business rules
+- Availability and scheduling logic
+- Booking conflict prevention
 - Conversation memory
 - Automated testing
 - System design
@@ -42,7 +44,7 @@
 
 The project is intentionally being developed **backend-first**.
 
-Instead of connecting an LLM directly to a database, the system first establishes a reliable booking domain, API layer, repository layer, validation rules, and automated tests.
+Instead of connecting an LLM directly to a database, the system first establishes a reliable booking domain, API layer, repository layer, validation rules, scheduling rules, availability engine, booking engine, and automated tests.
 
 The AI layer will later interact with these capabilities through controlled business tools.
 
@@ -58,8 +60,10 @@ It must be able to reliably:
 - retrieve available services
 - manage booking state
 - validate booking information
+- understand business hours
 - check availability
-- prevent conflicting reservations
+- detect overlapping reservations
+- prevent double-booking
 - create and modify bookings
 - cancel bookings safely
 - preserve conversation context
@@ -76,6 +80,8 @@ Controlled Business Tools
   ↓
 Booking Engine
   ↓
+Availability & Business Rules
+  ↓
 Repository Layer
   ↓
 MongoDB
@@ -89,14 +95,21 @@ The AI model will not manipulate the database directly.
 
 > **Phase 3 — Booking System: Completed**
 >
-> **Next: Phase 4 — Customers, Staff & Availability**
+> **Phase 4 — Availability & Scheduling Foundation: In Progress**
 
-The project currently has a functional FastAPI + MongoDB backend with booking lifecycle operations and automated API tests.
+The project currently has a functional FastAPI + MongoDB backend with:
+
+- persistent booking lifecycle operations
+- booking conflict detection
+- double-booking prevention
+- business-hours validation
+- persistent availability configuration
+- automated API and business-logic tests
 
 Current automated test status:
 
 ```text
-10 passed
+36 passed
 ```
 
 A dependency deprecation warning is currently emitted by the FastAPI/Starlette TestClient stack and does not represent a failing test.
@@ -123,6 +136,8 @@ A dependency deprecation warning is currently emitted by the FastAPI/Starlette T
 - [x] Pydantic request validation
 - [x] Interactive Swagger documentation
 - [x] HTTP error handling
+- [x] Booking conflict HTTP responses
+- [x] Business-hours validation during booking creation
 
 ## MongoDB
 
@@ -130,11 +145,13 @@ A dependency deprecation warning is currently emitted by the FastAPI/Starlette T
 - [x] `ai_booking_agent` database
 - [x] Services collection
 - [x] Bookings collection
+- [x] Availability collection
 - [x] PyMongo integration
 - [x] MongoDB connection layer
 - [x] Repository pattern
 - [x] ObjectId handling
 - [x] Persistent booking operations
+- [x] Persistent availability configuration
 
 ## Booking Management
 
@@ -148,18 +165,52 @@ A dependency deprecation warning is currently emitted by the FastAPI/Starlette T
 - [x] `cancelled` booking state
 - [x] Validation of booking input
 - [x] 404 handling for missing bookings
+- [x] Confirmed-booking filtering
+- [x] Cancelled bookings excluded from conflict checks
+
+## Availability & Scheduling
+
+- [x] Availability schema
+- [x] Day-of-week validation
+- [x] Start/end time validation
+- [x] Persistent availability repository
+- [x] Active availability retrieval
+- [x] Business-hours validation
+- [x] Full booking-duration validation
+- [x] Booking overlap detection
+- [x] Booking conflict detection
+- [x] Double-booking prevention
+- [x] Back-to-back booking support
+- [x] Cancelled slots become available again
+- [x] Booking engine integration with availability rules
+- [ ] Staff-specific schedules
+- [ ] Service-to-staff availability
+- [ ] Generated available time slots
 
 ## Testing
 
 - [x] Pytest configured
 - [x] Health endpoint test
-- [x] Services endpoint test
-- [x] Booking creation test
+- [x] Services endpoint tests
+- [x] Booking creation tests
 - [x] Booking retrieval tests
 - [x] Booking update tests
 - [x] Booking cancellation tests
 - [x] Not-found behavior tests
+- [x] Availability unit tests
+- [x] Availability schema validation tests
+- [x] Business-hours tests
+- [x] Booking-duration boundary tests
+- [x] Overlap detection tests
+- [x] Conflict integration tests
+- [x] Cancelled-booking conflict tests
 - [x] Full test suite passing
+
+Current result:
+
+```text
+36 passed
+```
 
 ---
 
@@ -167,6 +218,10 @@ A dependency deprecation warning is currently emitted by the FastAPI/Starlette T
 
 ```text
 AI Booking Agent
+│
+├── ai_core/
+│   ├── availability.py
+│   └── booking_engine.py
 │
 ├── api/
 │   ├── main.py
@@ -177,21 +232,22 @@ AI Booking Agent
 │   │
 │   └── schemas/
 │       ├── service.py
-│       └── booking.py
+│       ├── booking.py
+│       └── availability.py
 │
 ├── database/
 │   ├── connection.py
 │   │
 │   └── repositories/
 │       ├── services.py
-│       └── bookings.py
-│
-├── ai_core/
+│       ├── bookings.py
+│       └── availability.py
 │
 ├── tests/
 │   ├── test_health.py
 │   ├── test_services.py
-│   └── test_bookings.py
+│   ├── test_bookings.py
+│   └── test_availability.py
 │
 ├── docs/
 │   ├── assets/
@@ -203,7 +259,7 @@ AI Booking Agent
 └── README.md
 ```
 
-The current backend follows:
+The backend now follows a layered flow:
 
 ```text
 Client
@@ -214,12 +270,16 @@ API Routes
    ↓
 Pydantic Validation
    ↓
+Booking Engine
+   ↓
+Availability / Business Rules
+   ↓
 Repository Layer
    ↓
 MongoDB
 ```
 
-This separation prevents HTTP routing code from becoming tightly coupled to database operations.
+This separation prevents HTTP routing code from becoming tightly coupled to database operations or scheduling rules.
 
 ---
 
@@ -274,8 +334,6 @@ GET /services
       ↓
 FastAPI Route
       ↓
-get_all_services()
-      ↓
 Repository Layer
       ↓
 MongoDB
@@ -295,7 +353,7 @@ JSON Response
 POST /bookings
 ```
 
-Creates and persists a new booking.
+Creates and persists a new booking after validating the booking request against business rules.
 
 Example request:
 
@@ -304,7 +362,7 @@ Example request:
   "service_id": "6a779ed59b6b145fcfe108ab",
   "customer_name": "Dana",
   "customer_phone": "0500000000",
-  "booking_datetime": "2026-08-20T19:00:00"
+  "booking_datetime": "2026-08-20T10:00:00"
 }
 ```
 
@@ -315,6 +373,30 @@ New bookings default to:
   "status": "confirmed"
 }
 ```
+
+Before persistence, the booking flow can verify:
+
+```text
+Booking Request
+      ↓
+Input Validation
+      ↓
+Service Resolution
+      ↓
+Business Hours
+      ↓
+Booking Duration
+      ↓
+Existing Confirmed Bookings
+      ↓
+Conflict Detection
+      ↓
+Create Booking
+```
+
+A booking outside configured business hours is rejected instead of being stored.
+
+A booking that overlaps an existing confirmed reservation is also rejected.
 
 ---
 
@@ -360,7 +442,7 @@ PATCH /bookings/{booking_id}
 
 Supports partial updates.
 
-For example:
+Example:
 
 ```json
 {
@@ -394,18 +476,7 @@ cancelled
 
 This preserves the booking record for future history, auditing, analytics, and AI conversation context.
 
-Example response:
-
-```json
-{
-  "service_id": "6a779ed59b6b145fcfe108ab",
-  "customer_name": "Dana",
-  "customer_phone": "0500000000",
-  "booking_datetime": "2026-08-20T19:00:00",
-  "status": "cancelled",
-  "id": "..."
-}
-```
+Cancelled bookings are excluded from active booking-conflict checks, allowing their time slots to become available again.
 
 ---
 
@@ -432,7 +503,270 @@ The current booking lifecycle is intentionally simple:
              └──────────────┘
 ```
 
+Only active confirmed bookings participate in booking conflict detection.
+
+This means:
+
+```text
+confirmed booking
+       ↓
+occupies time slot
+
+cancelled booking
+       ↓
+does not occupy time slot
+```
+
 Additional lifecycle rules can be introduced as the booking engine evolves.
+
+---
+
+# Availability System
+
+The project now contains a persistent availability foundation.
+
+Availability records define when bookings may occur.
+
+Example:
+
+```json
+{
+  "day_of_week": "sunday",
+  "start_time": "09:00:00",
+  "end_time": "17:00:00",
+  "active": true
+}
+```
+
+The current development database contains availability configuration for the days of the week.
+
+Availability data is retrieved through the repository layer rather than accessed directly by the booking API.
+
+```text
+Booking Engine
+      ↓
+Availability Repository
+      ↓
+MongoDB
+      ↓
+Active Availability Records
+```
+
+---
+
+# Availability Validation
+
+Availability configuration is validated using Pydantic.
+
+The system restricts `day_of_week` to supported weekday values.
+
+Invalid arbitrary values such as:
+
+```text
+pizza
+abc
+holiday
+```
+
+are rejected.
+
+Time ranges are also validated.
+
+Valid:
+
+```text
+09:00 → 17:00
+```
+
+Invalid:
+
+```text
+17:00 → 09:00
+09:00 → 09:00
+```
+
+The rule is:
+
+```text
+end_time > start_time
+```
+
+This prevents invalid scheduling configuration from entering the application.
+
+---
+
+# Business Hours
+
+Bookings must fit inside configured business hours.
+
+For example, given:
+
+```text
+Opening: 09:00
+Closing: 17:00
+```
+
+a booking beginning at:
+
+```text
+10:00
+```
+
+may be valid.
+
+A booking beginning before opening time is rejected.
+
+A booking beginning at closing time is rejected.
+
+The engine also considers the **full service duration**, not only the booking start time.
+
+For a 60-minute service:
+
+```text
+16:00 → 17:00
+```
+
+is valid.
+
+But:
+
+```text
+16:30 → 17:30
+```
+
+is rejected because the service would finish after closing time.
+
+---
+
+# Conflict Detection
+
+The scheduling logic detects overlapping booking intervals.
+
+Conceptually:
+
+```text
+Existing booking:
+10:00 ───────── 11:00
+
+Requested booking:
+      10:30 ───────── 11:30
+
+Result:
+CONFLICT
+```
+
+The overlap rule is based on time intervals rather than comparing only exact start times.
+
+The system detects cases including:
+
+```text
+Partial overlap
+Contained booking
+Containing booking
+Identical booking times
+```
+
+---
+
+# Back-to-Back Bookings
+
+Adjacent bookings are allowed when they do not overlap.
+
+Example:
+
+```text
+Booking A
+10:00 ───────── 11:00
+
+Booking B
+                  11:00 ───────── 12:00
+```
+
+Result:
+
+```text
+No conflict
+```
+
+This allows available working time to be used efficiently without falsely treating adjacent reservations as overlapping.
+
+---
+
+# Double-Booking Prevention
+
+Booking conflict detection is integrated into booking creation.
+
+The system checks existing **confirmed** bookings before allowing a new reservation.
+
+Example:
+
+```text
+Existing:
+10:00 → 11:00
+
+Requested:
+10:30 → 11:30
+```
+
+The request is rejected with:
+
+```text
+409 Conflict
+```
+
+This prevents overlapping confirmed reservations from being persisted.
+
+The high-level flow is:
+
+```text
+POST /bookings
+      ↓
+Booking Schema
+      ↓
+Business Hours Check
+      ↓
+Conflict Check
+      ↓
+┌───────────────┬─────────────────┐
+│ No Conflict   │ Conflict        │
+│               │                 │
+▼               ▼
+Create          409 Conflict
+Booking
+```
+
+---
+
+# Booking Engine
+
+Business scheduling rules are being moved into `ai_core/booking_engine.py`.
+
+The booking engine acts as a reusable layer between interfaces such as FastAPI or future AI tools and the underlying repositories.
+
+Current responsibilities include:
+
+- service lookup
+- service duration resolution
+- availability lookup
+- business-hours validation
+- confirmed-booking lookup
+- booking conflict detection
+
+This architecture moves the project beyond CRUD-only behavior.
+
+```text
+API Route
+    ↓
+Booking Engine
+    ↓
+Business Rules
+    ↓
+Repositories
+    ↓
+MongoDB
+```
+
+The future AI agent will be able to reuse the same engine rather than implementing booking rules itself.
 
 ---
 
@@ -447,16 +781,18 @@ Current validation includes:
 - customer phone length
 - datetime parsing
 - controlled booking status values
+- controlled day-of-week values
+- valid availability time ranges
 
 Booking status is restricted to supported states rather than accepting arbitrary strings.
 
-For example, a value such as:
+Availability records also reject unsupported weekday values and invalid time ranges.
 
-```text
-hello
-```
+Application-level business rules additionally protect against:
 
-is rejected by validation.
+- booking outside business hours
+- booking beyond closing time
+- overlapping confirmed reservations
 
 Missing booking resources return:
 
@@ -464,7 +800,19 @@ Missing booking resources return:
 404 Not Found
 ```
 
-instead of silently returning an empty result.
+Conflicting booking requests return:
+
+```http
+409 Conflict
+```
+
+Business-rule validation can return:
+
+```http
+422 Unprocessable Entity
+```
+
+when the requested booking cannot be accepted under the configured scheduling rules.
 
 ---
 
@@ -478,24 +826,32 @@ Run the complete test suite:
 python -m pytest
 ```
 
+For verbose output:
+
+```bash
+python -m pytest -v
+```
+
 Current result:
 
 ```text
-10 passed
+36 passed
 ```
 
-Current test coverage includes behavior for:
+Current automated testing covers:
 
 ```text
 Health API
    │
    └── Application health
 
-Services API
+Services
    │
-   └── Retrieve services
+   ├── Retrieve services
+   ├── Retrieve service by ID
+   └── Active service mapping
 
-Bookings API
+Bookings
    │
    ├── Create
    ├── Retrieve all
@@ -504,10 +860,33 @@ Bookings API
    ├── Update
    ├── Missing booking during update
    ├── Cancel
-   └── Missing booking during cancellation
+   ├── Missing booking during cancellation
+   ├── Confirmed booking filtering
+   ├── Conflict rejection
+   ├── Cancelled slot reuse
+   └── Outside-business-hours rejection
+
+Availability
+   │
+   ├── Opening-time rules
+   ├── Closing-time rules
+   ├── Full-duration validation
+   ├── Overlap detection
+   ├── Back-to-back bookings
+   ├── Contained intervals
+   ├── Identical intervals
+   ├── Conflict detection
+   ├── Availability schema validation
+   ├── Day-of-week validation
+   └── Active availability retrieval
+
+Booking Engine
+   │
+   ├── Business-hours integration
+   └── Conflict integration
 ```
 
-The test suite is run after booking changes to detect regressions across existing functionality.
+The test suite is run after booking and scheduling changes to detect regressions across existing functionality.
 
 ---
 
@@ -517,7 +896,7 @@ The test suite is run after booking changes to detect regressions across existin
 
 | Technology | Purpose |
 |---|---|
-| Python | Core programming language |
+| Python 3.13 | Core programming language |
 | FastAPI | REST API framework |
 | MongoDB | NoSQL database |
 | PyMongo | MongoDB Python driver |
@@ -601,37 +980,61 @@ A functional persistent booking lifecycle backed by MongoDB.
 
 ## Phase 4 — Customers, Staff & Availability
 
-**Status: Next**
+**Status: In Progress**
 
-Planned components:
+### Completed so far
+
+- availability data model
+- availability Pydantic schema
+- weekday validation
+- availability time-range validation
+- MongoDB availability collection
+- availability repository
+- active availability retrieval
+- business-hours rules
+- service-duration-aware availability validation
+- interval overlap detection
+- booking conflict detection
+- double-booking prevention
+- cancelled booking exclusion from conflicts
+- booking engine integration
+- API-level scheduling validation
+- automated availability tests
+
+### Remaining
 
 - customer management
 - staff management
 - service-to-staff relationships
-- working schedules
-- availability calculation
-- booking conflict detection
-- double-booking prevention
+- staff-specific working schedules
+- staff availability
+- generated available time slots
 
-This phase moves the project beyond basic booking CRUD toward actual scheduling logic.
+This phase is moving the project beyond basic booking CRUD toward real scheduling behavior.
 
 ---
 
-## Phase 5 — Booking Engine
+## Phase 5 — Booking Engine Expansion
 
-**Status: Planned**
+**Status: Partially Started**
 
-The booking engine will isolate business rules from both FastAPI and the future AI layer.
+The booking engine foundation now exists and already participates in scheduling decisions.
 
-Planned responsibilities:
+Current capabilities include:
 
-- validate booking requests
-- verify service availability
-- verify staff availability
-- prevent overlapping bookings
-- enforce booking rules
-- manage booking lifecycle
-- expose reusable booking operations
+- service resolution
+- availability resolution
+- business-hours validation
+- booking conflict detection
+
+Planned expansion includes:
+
+- staff availability validation
+- service-to-staff rules
+- available-slot generation
+- additional booking policies
+- lifecycle orchestration
+- reusable booking operations
 
 Target flow:
 
@@ -796,6 +1199,9 @@ The target system is designed so that AI reasoning and deterministic business op
                     Booking Engine
                            │
                            ▼
+               Availability / Rules
+                           │
+                           ▼
                     Repository Layer
                            │
                            ▼
@@ -827,6 +1233,8 @@ Service Resolution
      ↓
 Availability Check
      ↓
+Business Hours Check
+     ↓
 Conflict Detection
      ↓
 Booking Decision
@@ -848,23 +1256,27 @@ The important architectural principle is that the language model **decides what 
 
 ## Separation of Concerns
 
-HTTP routing, validation, persistence, business rules, and AI reasoning are separated into distinct responsibilities.
+HTTP routing, validation, persistence, scheduling, business rules, and AI reasoning are separated into distinct responsibilities.
 
 ## Repository Pattern
 
-Database access is encapsulated behind repository functions rather than being scattered throughout API routes.
+Database access is encapsulated behind repository functions rather than being scattered throughout API routes or business logic.
 
 ## Validation at Boundaries
 
-Incoming API data is validated before reaching persistence logic.
+Incoming API data and availability configuration are validated before reaching persistence or business logic.
+
+## Deterministic Scheduling
+
+Availability, duration, overlap, and conflict rules are implemented as deterministic application logic rather than delegated to an AI model.
 
 ## Testability
 
-Important behavior is covered by automated tests and designed so that individual layers can increasingly be tested independently.
+Important behavior is covered by automated tests, including lower-level scheduling functions and API integration behavior.
 
 ## Maintainability
 
-The architecture is being expanded incrementally rather than placing booking, database, and AI logic into a single module.
+The architecture is being expanded incrementally rather than placing booking, database, scheduling, and AI logic into a single module.
 
 ## Security
 
@@ -881,6 +1293,8 @@ LLM
  ↓
 Validated Tool Call
  ↓
+Booking Engine
+ ↓
 Business Rules
  ↓
 Repository
@@ -890,7 +1304,7 @@ Database
 
 ## Framework Independence
 
-Core booking and AI logic should remain as independent as practical from FastAPI so it can later be reused through other interfaces and communication channels.
+Core booking, availability, and future AI logic should remain as independent as practical from FastAPI so they can later be reused through other interfaces and communication channels.
 
 ---
 
@@ -917,7 +1331,7 @@ source .venv/bin/activate
 
 ## 3. Configure Environment Variables
 
-Use the provided:
+Use:
 
 ```text
 .env.example
@@ -930,6 +1344,18 @@ Do not commit secrets or private credentials.
 ## 4. Start MongoDB
 
 MongoDB must be available before using database-dependent endpoints or running database-dependent tests.
+
+Verify the local MongoDB server:
+
+```bash
+mongosh --eval 'db.runCommand({ ping: 1 })'
+```
+
+A successful result should include:
+
+```text
+{ ok: 1 }
+```
 
 ## 5. Run the API
 
@@ -967,30 +1393,48 @@ For verbose output:
 python -m pytest -v
 ```
 
+Current expected result:
+
+```text
+36 passed
+```
+
 ---
 
 # Current Development Focus
 
-The backend foundation and core booking lifecycle are now operational.
+The project has progressed beyond basic booking CRUD.
 
-The next engineering milestone is:
+The current engineering focus is:
 
-> **Availability calculation and booking conflict prevention.**
+> **Complete the scheduling and availability layer before introducing conversation and AI reasoning.**
 
-This includes determining whether a requested time can actually be booked rather than simply storing a booking request.
-
-The planned progression is:
+The progression now looks like:
 
 ```text
 Booking CRUD
      │
      │ Completed
      ▼
-Availability
-     ↓
+Availability Foundation
+     │
+     │ Implemented
+     ▼
+Business Hours
+     │
+     │ Implemented
+     ▼
 Conflict Prevention
-     ↓
+     │
+     │ Implemented
+     ▼
 Booking Engine
+     │
+     │ Foundation Implemented
+     ▼
+Staff Scheduling
+     ↓
+Available Slot Generation
      ↓
 Conversation System
      ↓
@@ -1000,6 +1444,10 @@ Agent Tools
      ↓
 LLM Integration
 ```
+
+This sequencing is intentional.
+
+The future AI agent should consume a reliable scheduling engine rather than inventing scheduling decisions itself.
 
 ---
 
@@ -1029,6 +1477,8 @@ Chat
    ┘            ↓
           Booking Engine
                 ↓
+        Availability Rules
+                ↓
              MongoDB
 ```
 
@@ -1046,5 +1496,5 @@ This separation is the foundation of the project as it evolves from a tested boo
 
 <p align="center">
   <strong>AI Booking Agent</strong><br>
-  Backend Engineering • Booking Systems • AI Agents • System Design
+  Backend Engineering • Booking Systems • Availability • AI Agents • System Design
 </p>
