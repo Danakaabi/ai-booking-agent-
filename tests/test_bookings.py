@@ -66,7 +66,7 @@ def test_create_booking() -> None:
             "service_id": "6a779ed59b6b145fcfe108ab",
             "customer_name": "Dana",
             "customer_phone": "0500000000",
-            "booking_datetime": "2026-08-15T17:00:00",
+            "booking_datetime": "2026-08-15T16:00:00",
         },
     )
 
@@ -194,7 +194,7 @@ def test_cancel_booking() -> None:
             "service_id": "6a779ed59b6b145fcfe108ab",
             "customer_name": "Cancel Test",
             "customer_phone": "0500000000",
-            "booking_datetime": "2026-08-25T17:00:00",
+            "booking_datetime": "2026-08-25T16:00:00",
         },
     )
 
@@ -375,3 +375,22 @@ def test_cancelled_booking_does_not_cause_conflict() -> None:
     )
 
     assert replacement_response.status_code == 200
+
+
+
+
+def test_create_booking_rejects_booking_outside_business_hours() -> None:
+    response = client.post(
+        "/bookings",
+        json={
+            "service_id": "6a779ed59b6b145fcfe108ab",
+            "customer_name": "Outside Hours API Test",
+            "customer_phone": "0500000000",
+            "booking_datetime": "2026-08-16T16:30:00",
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == (
+        "Booking time is outside business hours"
+    )

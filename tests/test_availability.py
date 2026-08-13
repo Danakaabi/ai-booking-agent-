@@ -7,6 +7,16 @@ from ai_core.availability import (
     bookings_overlap,
     has_booking_conflict,
 )
+from api.schemas.booking import BookingCreate
+from ai_core.booking_engine import booking_is_within_business_hours
+
+from database.repositories.availability import get_active_availability
+
+import pytest
+from pydantic import ValidationError
+
+from api.schemas.availability import Availability
+
 
 def test_booking_time_within_business_hours():
     result = is_within_business_hours(
@@ -14,6 +24,8 @@ def test_booking_time_within_business_hours():
         opening_time=time(9, 0),
         closing_time=time(17, 0),
     )
+
+
 
     assert result is True
 
@@ -168,4 +180,79 @@ def test_has_booking_conflict_returns_false_when_no_overlap():
 
 
 
-    
+def test_availability_schema_accepts_valid_time_range():
+    availability = Availability(
+        day_of_week="sunday",
+        start_time="09:00:00",
+        end_time="17:00:00",
+        active=True,
+    )
+
+    assert availability.day_of_week == "sunday"
+    assert availability.start_time == time(9, 0)
+    assert availability.end_time == time(17, 0)
+    assert availability.active is True
+
+
+def test_availability_schema_rejects_invalid_time_range():
+    with pytest.raises(
+        ValidationError,
+        match="end_time must be later than start_time",
+    ):
+        Availability(
+            day_of_week="sunday",
+            start_time="17:00:00",
+            end_time="09:00:00",
+            active=True,
+        )
+
+
+
+
+
+def test_availability_schema_rejects_invalid_day_of_week():
+    with pytest.raises(ValidationError):
+        Availability(
+            day_of_week="pizza",
+            start_time="09:00:00",
+            end_time="17:00:00",
+            active=True,
+        )
+
+
+
+def test_booking_engine_accepts_booking_within_business_hours():
+    booking = BookingCreate(
+        service_id="6a779ed59b6b145fcfe108ab",
+        customer_name="Availability Test",
+        customer_phone="0500000000",
+        booking_datetime=datetime(2026, 8, 16, 10, 0),
+    )
+
+    result = booking_is_within_business_hours(booking)
+
+    assert result is True
+
+def test_booking_engine_rejects_booking_that_exceeds_business_hours():
+    booking = BookingCreate(
+        service_id="6a779ed59b6b145fcfe108ab",
+        customer_name="Availability Outside Hours Test",
+        customer_phone="0500000000",
+        booking_datetime=datetime(2026, 8, 16, 16, 30),
+    )
+
+    result = booking_is_within_business_hours(booking)
+
+    assert result is False
+
+def test_booking_engine_rejects_booking_before_business_hours():
+    booking = BookingCreate(
+        service_id="6a779ed59b6b145fcfe108ab",
+        customer_name="Before Hours Test",
+        customer_phone="0500000000",
+        booking_datetime=datetime(2026, 8, 16, 8, 30),
+    )
+
+    result = booking_is_within_business_hours(booking)
+
+    assert result is False

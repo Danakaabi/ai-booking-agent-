@@ -1,5 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from ai_core.booking_engine import booking_has_conflict
+from ai_core.booking_engine import (
+    booking_has_conflict,
+    booking_is_within_business_hours,
+)
 from api.schemas.booking import BookingCreate, BookingUpdate
 from database.repositories.bookings import (
     create_booking,
@@ -13,9 +16,14 @@ router = APIRouter(
     prefix="/bookings",
     tags=["Bookings"],
 )
-
 @router.post("")
 def create_booking_route(booking: BookingCreate) -> dict:
+    if not booking_is_within_business_hours(booking):
+        raise HTTPException(
+            status_code=422,
+            detail="Booking time is outside business hours",
+        )
+
     if booking_has_conflict(booking):
         raise HTTPException(
             status_code=409,
