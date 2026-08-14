@@ -9,6 +9,7 @@ class BookingCreate(BaseModel):
     customer_phone: str = Field(..., min_length=8, max_length=20)
     booking_datetime: datetime
     status: Literal["confirmed", "cancelled"] = "confirmed"
+    staff_id: str | None = None
 
 
 class BookingUpdate(BaseModel):

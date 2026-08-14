@@ -76,3 +76,23 @@ def get_confirmed_bookings() -> list[dict[str, Any]]:
         booking["id"] = str(booking.pop("_id"))
 
     return bookings
+
+
+
+
+def get_confirmed_bookings_by_staff_id(
+    staff_id: str,
+) -> list[dict]:
+    bookings = list(
+        bookings_collection.find(
+            {
+                "staff_id": staff_id,
+                "status": "confirmed",
+            }
+        )
+    )
+
+    for booking in bookings:
+        booking["id"] = str(booking.pop("_id"))
+
+    return bookings

@@ -10,6 +10,8 @@ from api.schemas.booking import BookingCreate
 from database.repositories.bookings import (
     bookings_collection,
     get_confirmed_bookings,
+    get_confirmed_bookings_by_staff_id,
+
 )
 from database.repositories.services import get_active_services_by_id
 
@@ -78,15 +80,20 @@ def test_create_booking() -> None:
     assert data["service_id"] == "6a779ed59b6b145fcfe108ab"
     assert "id" in data
 
-
 def test_get_bookings() -> None:
+    bookings_collection.delete_many(
+        {
+            "customer_name": "Get Bookings Test"
+        }
+    )
+
     create_response = client.post(
         "/bookings",
         json={
             "service_id": "6a779ed59b6b145fcfe108ab",
-            "customer_name": "Dana",
+            "customer_name": "Get Bookings Test",
             "customer_phone": "0500000000",
-            "booking_datetime": "2026-08-16T10:00:00",
+            "booking_datetime": "2026-08-16T12:00:00",
         },
     )
 
@@ -393,4 +400,58 @@ def test_create_booking_rejects_booking_outside_business_hours() -> None:
     assert response.status_code == 422
     assert response.json()["detail"] == (
         "Booking time is outside business hours"
+    )
+
+
+
+
+
+
+def test_get_confirmed_bookings_by_staff_id():
+    bookings_collection.delete_many(
+        {
+            "customer_name": {
+                "$in": [
+                    "Staff Booking Test",
+                    "Other Staff Booking",
+                ]
+            }
+        }
+    )
+
+    first_response = client.post(
+        "/bookings",
+        json={
+            "service_id": "6a779ed59b6b145fcfe108ab",
+            "staff_id": "staff-test-1",
+            "customer_name": "Staff Booking Test",
+            "customer_phone": "0500000090",
+            "booking_datetime": "2026-08-16T13:00:00",
+        },
+    )
+
+    assert first_response.status_code == 200
+
+    second_response = client.post(
+        "/bookings",
+        json={
+            "service_id": "6a779ed59b6b145fcfe108ab",
+            "staff_id": "staff-test-2",
+            "customer_name": "Other Staff Booking",
+            "customer_phone": "0500000091",
+            "booking_datetime": "2026-08-16T15:00:00",
+        },
+    )
+
+    assert second_response.status_code == 200
+
+    bookings = get_confirmed_bookings_by_staff_id(
+        "staff-test-1"
+    )
+
+    assert len(bookings) > 0
+
+    assert all(
+        booking["staff_id"] == "staff-test-1"
+        for booking in bookings
     )
