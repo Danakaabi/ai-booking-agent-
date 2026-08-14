@@ -8,6 +8,9 @@ from datetime import date
 from database.repositories.bookings import bookings_collection
 from ai_core.available_slots import generate_available_slots
 
+from fastapi.testclient import TestClient
+
+from api.main import app
 
 def test_create_staff_availability():
     availability = StaffAvailability(
@@ -232,3 +235,50 @@ def test_available_slots_exclude_staff_booking_conflicts():
     assert datetime(2026, 8, 16, 10, 30) not in slots
 
     assert datetime(2026, 8, 16, 11, 0) in slots
+
+
+
+
+client = TestClient(app)
+def test_available_slots_api():
+    staff = create_staff(
+        Staff(
+            name="Slots API Staff",
+            phone="0500000045",
+            service_ids=[
+                "6a779ed59b6b145fcfe108ab"
+            ],
+        )
+    )
+
+    create_staff_availability(
+        StaffAvailability(
+            staff_id=staff["id"],
+            day_of_week="sunday",
+            start_time="09:00:00",
+            end_time="12:00:00",
+        )
+    )
+
+    response = client.get(
+        f"/staff/{staff['id']}/available-slots",
+        params={
+            "target_date": "2026-08-16",
+            "start_hour": 9,
+            "end_hour": 12,
+            "duration_minutes": 60,
+            "interval_minutes": 30,
+        },
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["staff_id"] == staff["id"]
+    assert data["date"] == "2026-08-16"
+    assert isinstance(data["slots"], list)
+
+    assert "2026-08-16T09:00:00" in data["slots"]
+    assert "2026-08-16T11:00:00" in data["slots"]
+    assert "2026-08-16T11:30:00" not in data["slots"]
