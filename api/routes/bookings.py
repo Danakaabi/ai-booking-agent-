@@ -1,36 +1,70 @@
 from fastapi import APIRouter, HTTPException
-from ai_core.booking_engine import (
-    booking_has_conflict,
-    booking_is_within_business_hours,
-)
+
+from ai_core.booking_engine import validate_booking_request
 from api.schemas.booking import BookingCreate, BookingUpdate
 from database.repositories.bookings import (
+    cancel_booking,
     create_booking,
     get_all_bookings,
     get_booking_by_id,
     update_booking,
-    cancel_booking,
 )
+
 
 router = APIRouter(
     prefix="/bookings",
     tags=["Bookings"],
 )
+
+
 @router.post("")
 def create_booking_route(booking: BookingCreate) -> dict:
-    if not booking_is_within_business_hours(booking):
+    is_valid, error = validate_booking_request(booking)
+
+    if not is_valid:
+        if error == "Service not found":
+            raise HTTPException(
+                status_code=404,
+                detail="Service not found",
+            )
+
+        if error == "Staff not found":
+            raise HTTPException(
+                status_code=404,
+                detail="Staff not found",
+            )
+
+        if error == "Booking time conflicts with an existing booking":
+            raise HTTPException(
+                status_code=409,
+                detail="Booking time conflicts with an existing booking",
+            )
+
+        if error == "Booking is outside business hours":
+            raise HTTPException(
+                status_code=422,
+                detail="Booking time is outside business hours",
+            )
+
+        if error == "Staff does not provide this service":
+            raise HTTPException(
+                status_code=422,
+                detail="Staff does not provide this service",
+            )
+
+        if error == "Staff is not available at this time":
+            raise HTTPException(
+                status_code=422,
+                detail="Staff is not available at this time",
+            )
+
         raise HTTPException(
             status_code=422,
-            detail="Booking time is outside business hours",
-        )
-
-    if booking_has_conflict(booking):
-        raise HTTPException(
-            status_code=409,
-            detail="Booking time conflicts with an existing booking",
+            detail=error or "Booking request is invalid",
         )
 
     return create_booking(booking)
+
 
 @router.get("")
 def get_bookings() -> list[dict]:
@@ -42,10 +76,10 @@ def get_booking(booking_id: str) -> dict:
     booking = get_booking_by_id(booking_id)
 
     if booking is None:
-     raise HTTPException(
-        status_code=404,
-        detail="Booking not found"
-    )
+        raise HTTPException(
+            status_code=404,
+            detail="Booking not found",
+        )
 
     return booking
 
