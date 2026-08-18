@@ -6,12 +6,12 @@ from fastapi.testclient import TestClient
 from ai_core.availability import has_booking_conflict
 from ai_core.booking_engine import (
     booking_has_conflict,
+    execute_booking_request,
+    execute_booking_update,
     validate_booking_request,
-     execute_booking_request,
-
 )
 from api.main import app
-from api.schemas.booking import BookingCreate
+from api.schemas.booking import BookingCreate, BookingUpdate
 from api.schemas.staff import Staff
 from api.schemas.staff_availability import StaffAvailability
 from database.repositories.bookings import (
@@ -62,6 +62,10 @@ def clean_test_bookings():
         "Unavailable Staff Test",
         "Engine Execute Test",
        "Invalid Engine Execute Test",
+       "Reschedule Engine Test",
+       "Reschedule Engine Test Updated",
+       "Reschedule Conflict Existing",
+       "Reschedule Conflict Target",
     ]
 
     bookings_collection.delete_many(
@@ -686,3 +690,126 @@ def test_execute_booking_request_does_not_create_invalid_booking() -> None:
 
     assert created_booking is None
     assert error == "Service not found"
+
+
+
+def test_execute_booking_update_reschedules_valid_booking() -> None:
+    create_response = client.post(
+        "/bookings",
+        json={
+            "service_id": "6a779ed59b6b145fcfe108ab",
+            "customer_name": "Reschedule Engine Test",
+            "customer_phone": "0500000130",
+            "booking_datetime": "2026-08-22T10:00:00",
+        },
+    )
+
+    assert create_response.status_code == 200
+
+    booking_id = create_response.json()["id"]
+
+    update = BookingUpdate(
+        booking_datetime=datetime(
+            2026,
+            8,
+            22,
+            12,
+            0,
+        )
+    )
+
+    updated_booking, error = execute_booking_update(
+        booking_id,
+        update,
+    )
+
+    assert error is None
+    assert updated_booking is not None
+    assert updated_booking["booking_datetime"] == datetime(
+        2026,
+        8,
+        22,
+        12,
+        0,
+    )
+
+
+def test_execute_booking_update_rejects_conflicting_reschedule() -> None:
+    existing_response = client.post(
+        "/bookings",
+        json={
+            "service_id": "6a779ed59b6b145fcfe108ab",
+            "customer_name": "Reschedule Conflict Existing",
+            "customer_phone": "0500000131",
+            "booking_datetime": "2026-08-23T10:00:00",
+        },
+    )
+
+    assert existing_response.status_code == 200
+
+    target_response = client.post(
+        "/bookings",
+        json={
+            "service_id": "6a779ed59b6b145fcfe108ab",
+            "customer_name": "Reschedule Conflict Target",
+            "customer_phone": "0500000132",
+            "booking_datetime": "2026-08-23T13:00:00",
+        },
+    )
+
+    assert target_response.status_code == 200
+
+    target_booking_id = target_response.json()["id"]
+
+    update = BookingUpdate(
+        booking_datetime=datetime(
+            2026,
+            8,
+            23,
+            10,
+            30,
+        )
+    )
+
+
+    updated_booking, error = execute_booking_update(
+        target_booking_id,
+        update,
+    )
+
+    assert updated_booking is None
+    assert error == (
+        "Booking time conflicts with an existing booking"
+    )
+
+
+def test_execute_booking_update_does_not_conflict_with_itself() -> None:
+    create_response = client.post(
+        "/bookings",
+        json={
+            "service_id": "6a779ed59b6b145fcfe108ab",
+            "customer_name": "Reschedule Engine Test",
+            "customer_phone": "0500000133",
+            "booking_datetime": "2026-08-24T10:00:00",
+        },
+    )
+
+    assert create_response.status_code == 200
+
+    booking_id = create_response.json()["id"]
+
+    update = BookingUpdate(
+        customer_name="Reschedule Engine Test Updated",
+    )
+
+    updated_booking, error = execute_booking_update(
+        booking_id,
+        update,
+    )
+
+    assert error is None
+    assert updated_booking is not None
+    assert (
+        updated_booking["customer_name"]
+        == "Reschedule Engine Test Updated"
+    )

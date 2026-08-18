@@ -11,10 +11,17 @@ class BookingCreate(BaseModel):
     status: Literal["confirmed", "cancelled"] = "confirmed"
     staff_id: str | None = None
 
-
 class BookingUpdate(BaseModel):
     service_id: str | None = Field(default=None, min_length=1)
-    customer_name: str | None = Field(default=None, min_length=2, max_length=100)
-    customer_phone: str | None = Field(default=None, min_length=8, max_length=20)
+    customer_name: str | None = Field(
+        default=None,
+        min_length=2,
+        max_length=100,
+    )
+    customer_phone: str | None = Field(
+        default=None,
+        min_length=8,
+        max_length=20,
+    )
     booking_datetime: datetime | None = None
-    
+    staff_id: str | None = None
