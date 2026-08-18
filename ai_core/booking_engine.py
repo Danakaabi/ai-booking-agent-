@@ -9,6 +9,7 @@ from api.schemas.availability import Availability
 from api.schemas.booking import BookingCreate
 from database.repositories.availability import get_active_availability
 from database.repositories.bookings import (
+    create_booking,
     get_confirmed_bookings,
     get_confirmed_bookings_by_staff_id,
 )
@@ -136,3 +137,16 @@ def validate_booking_request(
         )
 
     return True, None
+
+
+def execute_booking_request(
+    booking: BookingCreate,
+) -> tuple[dict | None, str | None]:
+    is_valid, error = validate_booking_request(booking)
+
+    if not is_valid:
+        return None, error
+
+    created_booking = create_booking(booking)
+
+    return created_booking, None

@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException
 
-from ai_core.booking_engine import validate_booking_request
+from ai_core.booking_engine import execute_booking_request
 from api.schemas.booking import BookingCreate, BookingUpdate
 from database.repositories.bookings import (
     cancel_booking,
-    create_booking,
+
     get_all_bookings,
     get_booking_by_id,
     update_booking,
@@ -19,52 +19,57 @@ router = APIRouter(
 
 @router.post("")
 def create_booking_route(booking: BookingCreate) -> dict:
-    is_valid, error = validate_booking_request(booking)
+    created_booking, error = execute_booking_request(booking)
 
-    if not is_valid:
-        if error == "Service not found":
-            raise HTTPException(
-                status_code=404,
-                detail="Service not found",
-            )
-
-        if error == "Staff not found":
-            raise HTTPException(
-                status_code=404,
-                detail="Staff not found",
-            )
-
-        if error == "Booking time conflicts with an existing booking":
-            raise HTTPException(
-                status_code=409,
-                detail="Booking time conflicts with an existing booking",
-            )
-
-        if error == "Booking is outside business hours":
-            raise HTTPException(
-                status_code=422,
-                detail="Booking time is outside business hours",
-            )
-
-        if error == "Staff does not provide this service":
-            raise HTTPException(
-                status_code=422,
-                detail="Staff does not provide this service",
-            )
-
-        if error == "Staff is not available at this time":
-            raise HTTPException(
-                status_code=422,
-                detail="Staff is not available at this time",
-            )
-
+    if error == "Service not found":
         raise HTTPException(
-            status_code=422,
-            detail=error or "Booking request is invalid",
+            status_code=404,
+            detail="Service not found",
         )
 
-    return create_booking(booking)
+    if error == "Staff not found":
+        raise HTTPException(
+            status_code=404,
+            detail="Staff not found",
+        )
 
+    if error == "Booking time conflicts with an existing booking":
+        raise HTTPException(
+            status_code=409,
+            detail="Booking time conflicts with an existing booking",
+        )
+
+    if error == "Booking is outside business hours":
+        raise HTTPException(
+            status_code=422,
+            detail="Booking time is outside business hours",
+        )
+
+    if error == "Staff does not provide this service":
+        raise HTTPException(
+            status_code=422,
+            detail="Staff does not provide this service",
+        )
+
+    if error == "Staff is not available at this time":
+        raise HTTPException(
+            status_code=422,
+            detail="Staff is not available at this time",
+        )
+
+    if error is not None:
+        raise HTTPException(
+            status_code=422,
+            detail=error,
+        )
+
+    if created_booking is None:
+        raise HTTPException(
+            status_code=500,
+            detail="Booking could not be created",
+        )
+
+    return created_booking
 
 @router.get("")
 def get_bookings() -> list[dict]:

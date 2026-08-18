@@ -7,6 +7,8 @@ from ai_core.availability import has_booking_conflict
 from ai_core.booking_engine import (
     booking_has_conflict,
     validate_booking_request,
+     execute_booking_request,
+
 )
 from api.main import app
 from api.schemas.booking import BookingCreate
@@ -58,6 +60,8 @@ def clean_test_bookings():
         "Missing Staff Test",
         "Unsupported Service Test",
         "Unavailable Staff Test",
+        "Engine Execute Test",
+       "Invalid Engine Execute Test",
     ]
 
     bookings_collection.delete_many(
@@ -651,3 +655,34 @@ def test_validate_booking_request_rejects_unavailable_staff() -> None:
 
     assert is_valid is False
     assert error == "Staff is not available at this time"
+
+
+
+def test_execute_booking_request_creates_valid_booking() -> None:
+    booking = BookingCreate(
+        service_id="6a779ed59b6b145fcfe108ab",
+        customer_name="Engine Execute Test",
+        customer_phone="0500000120",
+        booking_datetime=datetime(2026, 8, 21, 10, 0),
+    )
+
+    created_booking, error = execute_booking_request(booking)
+
+    assert error is None
+    assert created_booking is not None
+    assert created_booking["customer_name"] == "Engine Execute Test"
+    assert "id" in created_booking
+
+
+def test_execute_booking_request_does_not_create_invalid_booking() -> None:
+    booking = BookingCreate(
+        service_id="000000000000000000000000",
+        customer_name="Invalid Engine Execute Test",
+        customer_phone="0500000121",
+        booking_datetime=datetime(2026, 8, 21, 10, 0),
+    )
+
+    created_booking, error = execute_booking_request(booking)
+
+    assert created_booking is None
+    assert error == "Service not found"
