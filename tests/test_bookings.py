@@ -9,6 +9,8 @@ from ai_core.booking_engine import (
     execute_booking_request,
     execute_booking_update,
     validate_booking_request,
+    execute_booking_cancellation,
+    
 )
 from api.main import app
 from api.schemas.booking import BookingCreate, BookingUpdate
@@ -66,6 +68,7 @@ def clean_test_bookings():
        "Reschedule Engine Test Updated",
        "Reschedule Conflict Existing",
        "Reschedule Conflict Target",
+       "Engine Cancellation Test",
     ]
 
     bookings_collection.delete_many(
@@ -813,3 +816,38 @@ def test_execute_booking_update_does_not_conflict_with_itself() -> None:
         updated_booking["customer_name"]
         == "Reschedule Engine Test Updated"
     )
+
+
+
+def test_execute_booking_cancellation_cancels_booking() -> None:
+    response = client.post(
+        "/bookings",
+        json={
+            "service_id": "6a779ed59b6b145fcfe108ab",
+            "customer_name": "Engine Cancellation Test",
+            "customer_phone": "0500000140",
+            "booking_datetime": "2026-08-23T15:00:00",
+
+        },
+)
+
+    assert response.status_code == 200
+
+    booking_id = response.json()["id"]
+
+    cancelled_booking, error = execute_booking_cancellation(
+        booking_id
+    )
+
+    assert error is None
+    assert cancelled_booking is not None
+    assert cancelled_booking["status"] == "cancelled"
+
+
+def test_execute_booking_cancellation_rejects_missing_booking() -> None:
+    cancelled_booking, error = execute_booking_cancellation(
+        "000000000000000000000000"
+    )
+
+    assert cancelled_booking is None
+    assert error == "Booking not found"

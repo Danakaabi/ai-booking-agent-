@@ -9,6 +9,7 @@ from api.schemas.availability import Availability
 from api.schemas.booking import BookingCreate, BookingUpdate
 from database.repositories.availability import get_active_availability
 from database.repositories.bookings import (
+    cancel_booking,
     create_booking,
     get_booking_by_id,
     get_confirmed_bookings,
@@ -203,3 +204,18 @@ def execute_booking_update(
     )
 
     return updated_booking, None
+
+
+
+
+def execute_booking_cancellation(
+    booking_id: str,
+) -> tuple[dict | None, str | None]:
+    existing_booking = get_booking_by_id(booking_id)
+
+    if existing_booking is None:
+        return None, "Booking not found"
+
+    cancelled_booking = cancel_booking(booking_id)
+
+    return cancelled_booking, None
