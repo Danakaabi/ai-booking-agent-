@@ -19,7 +19,8 @@
   <img src="https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white" alt="FastAPI">
   <img src="https://img.shields.io/badge/MongoDB-Database-47A248?logo=mongodb&logoColor=white" alt="MongoDB">
   <img src="https://img.shields.io/badge/Pydantic-Validation-E92063" alt="Pydantic">
-  <img src="https://img.shields.io/badge/Pytest-79%20Passing-0A9EDC?logo=pytest&logoColor=white" alt="Tests">
+  <img src="https://img.shields.io/badge/Pytest-123%20Passing-0A9EDC?logo=pytest&logoColor=white" alt="Tests">
+  <img src="https://img.shields.io/badge/Phase%206-Completed-success" alt="Phase 6">
   <img src="https://img.shields.io/badge/Status-Active%20Development-orange" alt="Status">
 </p>
 
@@ -29,18 +30,18 @@
 
 **AI Booking Agent** is a reusable booking backend designed to evolve into an AI-powered booking agent.
 
-The project is intentionally developed **backend-first** so that booking rules, scheduling, availability, staff assignment, conflict detection, validation, and persistence are reliable before introducing LLM reasoning.
+The project is intentionally developed **backend-first** so that booking rules, scheduling, availability, staff assignment, conflict detection, validation, conversation state, context management, and persistence are reliable before introducing LLM reasoning.
 
 ```text
 User / Client
       ↓
 FastAPI
       ↓
-API Routes
+Conversation API / Booking API
       ↓
-Booking Engine
+Conversation Service / Booking Engine
       ↓
-Scheduling & Business Rules
+Validation & Business Rules
       ↓
 Repository Layer
       ↓
@@ -49,7 +50,7 @@ MongoDB
 
 The future AI layer will interact with the system through controlled business tools rather than direct database access.
 
-This keeps AI reasoning separate from deterministic booking rules and persistence.
+This keeps probabilistic AI reasoning separate from deterministic booking rules, conversation infrastructure, and persistence.
 
 ---
 
@@ -63,12 +64,18 @@ This keeps AI reasoning separate from deterministic booking rules and persistenc
 >
 > **Phase 4 — Customers, Staff & Availability: Completed**
 >
-> **Phase 5 — Booking Engine Expansion: In Progress**
+> **Phase 5 — Booking Engine Expansion: Completed**
+>
+> **Phase 6 — Conversation System: Completed**
+>
+> **Phase 7 — AI Core: Next**
 
 Current automated test status:
 
 ```text
-79 passed
+123 passed
+1 warning
+0 failures
 ```
 
 A FastAPI/Starlette TestClient dependency deprecation warning is currently emitted but does not represent a failing test.
@@ -99,6 +106,7 @@ A FastAPI/Starlette TestClient dependency deprecation warning is currently emitt
 - [x] Centralized booking validation
 - [x] Booking creation orchestration
 - [x] Booking update orchestration
+- [x] Booking cancellation orchestration
 - [x] Service validation
 - [x] Business-hours validation
 - [x] Staff validation
@@ -108,6 +116,7 @@ A FastAPI/Starlette TestClient dependency deprecation warning is currently emitt
 - [x] Staff-aware conflict detection
 - [x] Current-booking exclusion during rescheduling
 - [x] Repository-backed booking execution
+- [x] Shared HTTP error mapping for booking business errors
 
 ## Availability & Scheduling
 
@@ -142,6 +151,32 @@ A FastAPI/Starlette TestClient dependency deprecation warning is currently emitt
 - [x] Staff lookup by service
 - [x] Staff-specific availability
 
+## Conversation System
+
+- [x] Conversation schema
+- [x] Message schema
+- [x] Message roles: user, assistant, system
+- [x] Conversations MongoDB collection
+- [x] Messages MongoDB collection
+- [x] Conversation repository
+- [x] Message repository
+- [x] Conversation creation
+- [x] Conversation retrieval
+- [x] Message persistence
+- [x] Conversation history
+- [x] Ordered message history
+- [x] Conversation isolation
+- [x] Conversation state
+- [x] Active and completed states
+- [x] Booking context
+- [x] Partial booking-context updates
+- [x] Preservation of previously collected context
+- [x] Conversation service
+- [x] Conversation-to-booking conversion
+- [x] Conversation-to-booking-engine integration
+- [x] Conversation REST API
+- [x] Shared booking business error mapping
+
 ## Testing
 
 - [x] Schema tests
@@ -159,12 +194,22 @@ A FastAPI/Starlette TestClient dependency deprecation warning is currently emitt
 - [x] Booking rescheduling tests
 - [x] Rescheduling conflict tests
 - [x] Self-conflict exclusion tests
+- [x] Conversation schema tests
+- [x] Conversation repository tests
+- [x] Message repository tests
+- [x] Conversation service tests
+- [x] Booking context tests
+- [x] Conversation API tests
+- [x] Conversation-to-booking integration tests
+- [x] Shared HTTP error mapping tests
 - [x] Full regression suite
 
 Current result:
 
 ```text
-79 passed
+123 passed
+1 warning
+0 failures
 ```
 
 ---
@@ -177,19 +222,23 @@ AI Booking Agent
 ├── ai_core/
 │   ├── availability.py
 │   ├── booking_engine.py
+│   ├── conversation_service.py
 │   ├── staff_availability.py
 │   └── available_slots.py
 │
 ├── api/
 │   ├── main.py
+│   ├── http_errors.py
 │   ├── routes/
 │   │   ├── services.py
 │   │   ├── bookings.py
+│   │   ├── conversations.py
 │   │   ├── customers.py
 │   │   └── staff.py
 │   └── schemas/
 │       ├── service.py
 │       ├── booking.py
+│       ├── conversation.py
 │       ├── availability.py
 │       ├── customer.py
 │       ├── staff.py
@@ -200,6 +249,8 @@ AI Booking Agent
 │   └── repositories/
 │       ├── services.py
 │       ├── bookings.py
+│       ├── conversations.py
+│       ├── messages.py
 │       ├── availability.py
 │       ├── customers.py
 │       ├── staff.py
@@ -212,7 +263,12 @@ AI Booking Agent
 │   ├── test_availability.py
 │   ├── test_customers.py
 │   ├── test_staff.py
-│   └── test_staff_availability.py
+│   ├── test_staff_availability.py
+│   ├── test_conversation_schemas.py
+│   ├── test_conversation_repository.py
+│   ├── test_message_repository.py
+│   ├── test_conversation_service.py
+│   └── test_conversations_api.py
 │
 ├── docs/
 ├── .env.example
@@ -231,21 +287,38 @@ API Routes
    ↓
 Pydantic Validation
    ↓
-Booking Engine
-   ├── Booking Validation
-   ├── Booking Orchestration
-   ├── Availability Rules
-   ├── Conflict Detection
-   ├── Staff Validation
-   ├── Staff Availability
-   └── Rescheduling Validation
+Conversation Service / Booking Engine
+   ↓
+Business Rules & Orchestration
    ↓
 Repository Layer
    ↓
 MongoDB
 ```
 
-This separation prevents HTTP routing code from becoming tightly coupled to database operations or scheduling rules.
+Conversation-to-booking flow:
+
+```text
+User
+   ↓
+Conversation
+   ↓
+Messages + State
+   ↓
+Booking Context
+   ↓
+BookingCreate
+   ↓
+Booking Engine
+   ↓
+Validation & Scheduling Rules
+   ↓
+Repositories
+   ↓
+MongoDB
+```
+
+This separation prevents HTTP routing code from becoming tightly coupled to database operations, conversation state, or scheduling rules.
 
 ---
 
@@ -277,13 +350,9 @@ Services provide scheduling information such as service duration, which is used 
 
 ```http
 POST /bookings
-
 GET /bookings
-
 GET /bookings/{booking_id}
-
 PATCH /bookings/{booking_id}
-
 PATCH /bookings/{booking_id}/cancel
 ```
 
@@ -327,9 +396,7 @@ PATCH /bookings/{booking_id}
 
 Partial updates are supported through `BookingUpdate`.
 
-Booking updates now pass through the booking engine rather than directly modifying the database.
-
-Conceptually:
+Booking updates pass through the booking engine rather than directly modifying the database.
 
 ```text
 PATCH Booking
@@ -368,7 +435,132 @@ Result:
 
 The booking being updated is excluded from its own conflict check.
 
-This prevents a valid update from being incorrectly rejected because the booking overlaps with its existing stored version.
+This prevents a valid update from being incorrectly rejected because the candidate overlaps with the booking's existing stored version.
+
+---
+
+## Conversations
+
+```http
+POST /conversations
+GET /conversations/{conversation_id}
+POST /conversations/{conversation_id}/messages
+GET /conversations/{conversation_id}/messages
+PATCH /conversations/{conversation_id}/booking-context
+POST /conversations/{conversation_id}/bookings
+```
+
+The conversation API provides persistent conversation infrastructure without introducing an LLM.
+
+A new conversation starts with:
+
+```text
+state = active
+
+booking_context:
+  service_id = None
+  customer_name = None
+  customer_phone = None
+  booking_datetime = None
+  staff_id = None
+```
+
+Messages are stored independently from the conversation document so conversation history can grow without continuously expanding one MongoDB document.
+
+Conceptually:
+
+```text
+Conversation
+    ├── state
+    ├── booking_context
+    └── timestamps
+
+Messages
+    ├── conversation_id
+    ├── role
+    ├── content
+    └── created_at
+```
+
+### Conversation Messages
+
+```http
+POST /conversations/{conversation_id}/messages
+GET /conversations/{conversation_id}/messages
+```
+
+Supported message roles:
+
+```text
+user
+assistant
+system
+```
+
+History is returned from oldest to newest and is isolated by `conversation_id`.
+
+### Booking Context
+
+```http
+PATCH /conversations/{conversation_id}/booking-context
+```
+
+Booking context stores incomplete booking information while it is gathered over multiple messages.
+
+```text
+BookingContext
+├── service_id
+├── customer_name
+├── customer_phone
+├── booking_datetime
+└── staff_id
+```
+
+All fields are optional at the conversation stage because the user may provide them incrementally.
+
+Partial updates preserve existing values:
+
+```text
+Update 1:
+service_id = service-123
+
+Update 2:
+customer_name = Dana
+
+Final Context:
+service_id = service-123
+customer_name = Dana
+```
+
+### Create Booking from Conversation
+
+```http
+POST /conversations/{conversation_id}/bookings
+```
+
+A booking is executed only after the required context is complete.
+
+```text
+Conversation
+      ↓
+Booking Context
+      ↓
+Complete?
+ ┌────┴────┐
+ │         │
+No        Yes
+ │         │
+ ▼         ▼
+422    BookingCreate
+            ↓
+      Booking Engine
+            ↓
+      Business Rules
+            ↓
+        MongoDB
+```
+
+Conversation-specific errors are handled by the conversation API, while booking business errors use the shared HTTP error mapper.
 
 ---
 
@@ -384,7 +576,6 @@ Customer data is kept separate from booking business logic so that customer mana
 
 ```http
 GET /staff
-
 GET /staff/{staff_id}
 ```
 
@@ -446,7 +637,7 @@ Only slots that satisfy the scheduling rules are returned.
 
 # Booking Engine
 
-The booking engine is becoming the central application layer for booking decisions.
+The booking engine is the central application layer for booking decisions.
 
 Instead of allowing API routes to independently implement booking rules, reusable orchestration functions coordinate validation and persistence.
 
@@ -462,24 +653,25 @@ Booking Engine
 ├── Staff Availability
 ├── Conflict Detection
 ├── Booking Creation Orchestration
-└── Booking Update / Rescheduling Orchestration
+├── Booking Update / Rescheduling Orchestration
+└── Booking Cancellation Orchestration
 ```
 
 The current architecture follows:
 
 ```text
-API Route
-    ↓
-Booking Engine
-    ↓
-Business Rules
-    ↓
-Repositories
-    ↓
-MongoDB
+API Route / Conversation Service
+             ↓
+        Booking Engine
+             ↓
+        Business Rules
+             ↓
+        Repositories
+             ↓
+           MongoDB
 ```
 
-This is important for the future AI architecture because both FastAPI routes and AI business tools can reuse the same deterministic booking engine.
+This is important for the future AI architecture because FastAPI routes, conversation workflows, and AI business tools can reuse the same deterministic booking engine.
 
 ---
 
@@ -539,7 +731,7 @@ Create   Return
 Booking  Error
 ```
 
-This keeps validation and execution together at the application layer instead of duplicating booking rules inside API routes.
+This keeps validation and execution together at the application layer instead of duplicating booking rules inside API routes or conversation logic.
 
 ---
 
@@ -610,6 +802,74 @@ This supports future:
 
 ---
 
+# Conversation State
+
+Conversation state is intentionally separate from booking status.
+
+```text
+Conversation State
+active
+completed
+```
+
+```text
+Booking Status
+confirmed
+cancelled
+```
+
+The distinction prevents conversation lifecycle concerns from being mixed with booking lifecycle rules.
+
+A conversation begins as:
+
+```text
+active
+```
+
+and can later transition to:
+
+```text
+completed
+```
+
+State changes update the conversation's `updated_at` timestamp.
+
+---
+
+# Booking Context
+
+`BookingContext` is temporary conversation memory for booking data that has not yet become a real booking.
+
+It mirrors the relevant fields from `BookingCreate`, but allows them to be optional while information is being collected.
+
+```text
+BookingContext             BookingCreate
+--------------             -------------
+service_id       Optional  Required
+customer_name    Optional  Required
+customer_phone   Optional  Required
+booking_datetime Optional  Required
+staff_id         Optional  Optional
+```
+
+`status` is intentionally excluded from `BookingContext` because `confirmed` and `cancelled` belong to an actual booking, not to pre-booking conversation memory.
+
+When all required context fields are available:
+
+```text
+BookingContext
+      ↓
+build_booking_from_context()
+      ↓
+BookingCreate
+      ↓
+execute_booking_request()
+```
+
+The Booking Engine remains responsible for deciding whether the completed request is valid.
+
+---
+
 # Scheduling Rules
 
 The system enforces deterministic scheduling rules.
@@ -624,7 +884,6 @@ For a 60-minute service:
 
 ```text
 16:00 → 17:00   ✓
-
 16:30 → 17:30   ✗
 ```
 
@@ -723,6 +982,9 @@ Current schema-level validation includes:
 - controlled booking status values
 - controlled day-of-week values
 - valid availability time ranges
+- controlled conversation message roles
+- message content length
+- partial BookingContext validation
 
 Application-level validation additionally protects against:
 
@@ -734,26 +996,35 @@ Application-level validation additionally protects against:
 - unavailable staff
 - overlapping confirmed reservations
 - conflicting rescheduling requests
+- missing conversations
+- incomplete booking context
 
-Typical HTTP responses include:
-
-```text
-404 Not Found
-```
-
-for missing resources.
+Booking business HTTP errors are centralized in:
 
 ```text
-409 Conflict
+api/http_errors.py
 ```
 
-for conflicting reservations.
+This keeps HTTP semantics consistent across both booking and conversation APIs.
+
+Examples:
 
 ```text
-422 Unprocessable Entity
-```
+Service not found
+→ 404 Not Found
 
-for booking requests that violate scheduling or application rules.
+Booking time conflicts with an existing booking
+→ 409 Conflict
+
+Booking is outside business hours
+→ 422 Unprocessable Entity
+
+Booking context is incomplete
+→ 422 Unprocessable Entity
+
+Conversation not found
+→ 404 Not Found
+```
 
 ---
 
@@ -770,7 +1041,9 @@ python -m pytest -v
 Current result:
 
 ```text
-79 passed
+123 passed
+1 warning
+0 failures
 ```
 
 Current automated testing covers:
@@ -832,9 +1105,30 @@ Availability
    ├── Contained intervals
    ├── Identical intervals
    └── Schema validation
+
+Conversation
+   ├── Conversation schema
+   ├── Message schema
+   ├── Message-role validation
+   ├── Conversation creation
+   ├── Conversation retrieval
+   ├── Conversation state
+   ├── BookingContext validation
+   ├── Partial context updates
+   ├── Context preservation
+   ├── Message persistence
+   ├── Ordered history
+   ├── Conversation isolation
+   ├── Conversation service
+   ├── Conversation API
+   ├── Missing-conversation behavior
+   ├── Incomplete-context behavior
+   ├── Conversation-to-booking conversion
+   ├── Conversation-to-booking-engine execution
+   └── Shared business error mapping
 ```
 
-The full regression suite is run after booking and scheduling changes to detect regressions across existing functionality.
+The full regression suite is run after booking, scheduling, conversation, and integration changes to detect regressions across existing functionality.
 
 ---
 
@@ -854,7 +1148,9 @@ The full regression suite is run after booking and scheduling changes to detect 
 Planned:
 
 - LLM API
+- intent detection
 - AI business tools
+- tool calling
 - Docker
 - GitHub Actions
 
@@ -908,7 +1204,7 @@ Delivered:
 
 ## Phase 5 — Booking Engine Expansion
 
-**In Progress**
+**Completed**
 
 Implemented:
 
@@ -921,19 +1217,22 @@ Implemented:
 - [x] Centralized conflict validation
 - [x] Booking creation orchestration
 - [x] Booking update orchestration
+- [x] Booking cancellation orchestration
 - [x] Validated rescheduling
 - [x] Current-booking exclusion during rescheduling
 - [x] Conflict-aware booking updates
 - [x] Reusable booking operations
+- [x] Centralized HTTP error mapping
+- [x] Regression testing
 
-Current direction:
+Final Phase 5 direction:
 
 ```text
 API
  ↓
 Booking Engine
  ↓
-Validation
+Validation & Orchestration
  ↓
 Business Rules
  ↓
@@ -942,31 +1241,85 @@ Repositories
 MongoDB
 ```
 
-Remaining Phase 5 work will continue strengthening the booking engine as a reusable application layer before introducing conversational AI.
+The booking engine is now reusable by both REST routes and conversation workflows.
 
 ---
 
 ## Phase 6 — Conversation System
 
-**Planned**
+**Completed**
 
-- conversations
-- messages
-- conversation history
-- conversation context
-- persistent memory
+Implemented:
+
+- [x] Conversation model/schema
+- [x] Message model/schema
+- [x] Conversations collection
+- [x] Messages collection
+- [x] Conversation repository
+- [x] Message repository
+- [x] Create conversation
+- [x] Get conversation
+- [x] Store user messages
+- [x] Store assistant/system messages
+- [x] Retrieve conversation history
+- [x] Conversation state
+- [x] Booking context
+- [x] Partial context updates
+- [x] Conversation service
+- [x] Conversation-to-booking conversion
+- [x] Booking Engine integration
+- [x] Conversation REST API
+- [x] Shared booking HTTP error mapping
+- [x] Validation and error handling
+- [x] Unit and integration testing
+- [x] Full regression testing
+
+Final Phase 6 flow:
+
+```text
+User
+ ↓
+Conversation API
+ ↓
+Conversation Service
+ ↓
+Messages + State + Booking Context
+ ↓
+BookingCreate
+ ↓
+Booking Engine
+ ↓
+Repositories
+ ↓
+MongoDB
+```
+
+Final Phase 6 regression:
+
+```text
+123 passed
+1 warning
+0 failures
+```
+
+No LLM was introduced during this phase.
 
 ---
 
 ## Phase 7 — AI Core
 
-**Planned**
+**Next**
+
+Planned direction:
 
 - intent detection
 - entity extraction
-- booking state
-- decision logic
-- conversation memory
+- conversation decision logic
+- booking-intent state handling
+- deterministic orchestration around existing conversation context
+- preparation for controlled tool selection
+
+The AI core will build on the completed Conversation System rather than replacing it.
 
 ---
 
@@ -976,15 +1329,10 @@ Remaining Phase 5 work will continue strengthening the booking engine as a reusa
 
 ```text
 get_services
-
 get_staff
-
 get_available_times
-
 create_booking
-
 update_booking
-
 cancel_booking
 ```
 
@@ -1026,7 +1374,6 @@ The AI layer will not access MongoDB directly.
 
 ```bash
 git clone https://github.com/Danakaabi/ai-booking-agent-.git
-
 cd ai-booking-agent
 ```
 
@@ -1034,7 +1381,6 @@ cd ai-booking-agent
 
 ```bash
 python -m venv .venv
-
 source .venv/bin/activate
 ```
 
@@ -1053,6 +1399,8 @@ Expected:
 ```
 
 MongoDB must be running before executing tests that depend on repository persistence.
+
+If MongoDB is not running as a Homebrew service, it can be started manually using the configured `mongod.conf` before running repository and integration tests.
 
 ## Run API
 
@@ -1075,7 +1423,9 @@ python -m pytest -v
 Current expected result:
 
 ```text
-79 passed
+123 passed
+1 warning
+0 failures
 ```
 
 A dependency deprecation warning from the FastAPI/Starlette TestClient stack may appear and does not currently represent a failing test.
@@ -1084,51 +1434,41 @@ A dependency deprecation warning from the FastAPI/Starlette TestClient stack may
 
 # Current Development Focus
 
-The scheduling foundation is complete and the booking engine is being expanded into a reusable orchestration layer.
+The deterministic booking foundation and persistent Conversation System are complete.
 
 ```text
 Foundation                         ✓
-
 FastAPI + MongoDB                  ✓
-
 Booking System                     ✓
-
 Availability                       ✓
-
 Conflict Prevention                ✓
-
 Customers                          ✓
-
 Staff                              ✓
-
 Staff Scheduling                   ✓
-
 Available Slots                    ✓
-
 Centralized Booking Validation     ✓
-
 Booking Creation Orchestration     ✓
-
 Validated Rescheduling             ✓
-
 Booking Update Orchestration       ✓
-
-Booking Engine Expansion           → IN PROGRESS
-
-Conversation System
-
-AI Core
-
+Booking Cancellation Orchestration ✓
+Booking Engine Expansion           ✓
+Conversation Schemas               ✓
+Conversation Persistence           ✓
+Message History                    ✓
+Conversation State                 ✓
+Booking Context                    ✓
+Conversation ↔ Booking Engine      ✓
+Conversation REST API              ✓
+Shared Error Handling              ✓
+AI Core                            → NEXT
 Agent Tools
-
 LLM Integration
-
 Production Engineering
 ```
 
 The current objective is:
 
-> **Complete the reusable booking orchestration layer before introducing conversational AI.**
+> **Build the AI decision layer on top of the completed deterministic booking and conversation infrastructure without duplicating business logic.**
 
 ---
 
@@ -1138,6 +1478,8 @@ The current objective is:
 Client
    ↓
 FastAPI
+   ↓
+Conversation System
    ↓
 AI Agent
    ↓
@@ -1156,13 +1498,14 @@ The AI model will decide:
 
 ```text
 What operation is needed?
+What information is still missing?
+Which controlled tool should be used?
 ```
 
 The deterministic backend will decide:
 
 ```text
 Is the operation allowed?
-
 How should it be executed?
 ```
 
@@ -1178,23 +1521,18 @@ A booking agent must reliably understand and enforce rules such as:
 
 ```text
 Does the service exist?
-
 Does the staff member provide the service?
-
 Is the business open?
-
 Is the staff member working?
-
 Does the full service duration fit?
-
 Does another confirmed booking overlap?
-
 Can this booking be safely rescheduled?
+Is the conversation context complete enough to request a booking?
 ```
 
 These decisions should not depend on probabilistic model output.
 
-The future AI agent will therefore use deterministic backend operations rather than reproducing booking logic inside prompts.
+The future AI agent will therefore use deterministic backend operations and persistent conversation infrastructure rather than reproducing booking logic inside prompts.
 
 ---
 
@@ -1203,9 +1541,13 @@ The future AI agent will therefore use deterministic backend operations rather t
 - Separation of concerns
 - Repository pattern
 - Centralized booking orchestration
+- Dedicated conversation service
 - Validation at application boundaries
 - Deterministic scheduling
 - Conflict-safe booking operations
+- Persistent conversation state
+- Partial booking-context collection
+- Shared HTTP error mapping
 - Automated regression testing
 - Framework-independent business logic
 - Controlled AI tool execution
@@ -1230,7 +1572,7 @@ Web
 Mobile
 Chat
    ↓
-AI / API Layer
+Conversation / AI Layer
    ↓
 Business Tools
    ↓
@@ -1241,13 +1583,15 @@ Scheduling
 MongoDB
 ```
 
-The same deterministic booking engine can support multiple interfaces without duplicating business rules.
+The same deterministic booking engine and conversation infrastructure can support multiple interfaces without duplicating business rules.
 
 ---
 
 # Project Philosophy
 
 > **AI should reason about the request.**
+>
+> **Conversation infrastructure should preserve context and state.**
 >
 > **Business logic should decide what is allowed.**
 >
@@ -1257,5 +1601,5 @@ The same deterministic booking engine can support multiple interfaces without du
 
 <p align="center">
   <strong>AI Booking Agent</strong><br>
-  Backend Engineering • Booking Systems • Scheduling • AI Agents • System Design
+  Backend Engineering • Booking Systems • Scheduling • Conversation Systems • AI Agents • System Design
 </p>
