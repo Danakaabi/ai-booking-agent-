@@ -3,8 +3,15 @@ from bson import ObjectId
 from ai_core.conversation_service import (
     add_message_to_conversation,
     get_conversation_history,
+    change_conversation_state,
+    update_conversation_booking_context,
 )
-from api.schemas.conversation import MessageCreate, MessageRole
+from api.schemas.conversation import (
+     BookingContext,
+     ConversationState, 
+     MessageCreate,
+     MessageRole,
+)
 from database.repositories.conversations import (
     conversations_collection,
     create_conversation,
@@ -105,6 +112,65 @@ def test_get_conversation_history():
             {"conversation_id": conversation["id"]}
         )
 
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
+
+
+def test_change_conversation_state():
+    conversation = create_conversation()
+
+    try:
+        assert conversation["state"] == ConversationState.ACTIVE
+
+        updated = change_conversation_state(
+            conversation_id=conversation["id"],
+            state=ConversationState.COMPLETED,
+        )
+
+        assert updated is not None
+        assert updated["state"] == ConversationState.COMPLETED
+
+    finally:
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
+
+def test_update_conversation_booking_context_preserves_existing_data():
+    conversation = create_conversation()
+
+    try:
+        first_update = update_conversation_booking_context(
+            conversation_id=conversation["id"],
+            context=BookingContext(
+                service_id="service-123",
+            ),
+        )
+
+        assert first_update is not None
+        assert (
+            first_update["booking_context"]["service_id"]
+            == "service-123"
+        )
+
+        second_update = update_conversation_booking_context(
+            conversation_id=conversation["id"],
+            context=BookingContext(
+                customer_name="Dana",
+            ),
+        )
+
+        assert second_update is not None
+        assert (
+            second_update["booking_context"]["service_id"]
+            == "service-123"
+        )
+        assert (
+            second_update["booking_context"]["customer_name"]
+            == "Dana"
+        )
+
+    finally:
         conversations_collection.delete_one(
             {"_id": ObjectId(conversation["id"])}
         )

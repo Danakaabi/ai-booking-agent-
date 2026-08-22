@@ -9,17 +9,37 @@ class MessageRole(str, Enum):
     ASSISTANT = "assistant"
     SYSTEM = "system"
 
+class ConversationState(str,Enum):
+    ACTIVE = "active"
+    COMPLETED = "completed"
 
+
+class BookingContext(BaseModel):
+    service_id: str | None = Field(default=None, min_length=1)
+    customer_name: str | None = Field(
+        default=None,
+        min_length=2,
+        max_length=100,
+    )
+    customer_phone: str | None = Field(
+        default=None,
+        min_length=8,
+        max_length=20,
+    )
+    booking_datetime: datetime | None = None
+    staff_id: str | None = None
+    
 class ConversationCreate(BaseModel):
     """Data required to start a new conversation."""
 
     pass
 
-
 class Conversation(BaseModel):
     """Public representation of a stored conversation."""
 
     id: str
+    state: ConversationState
+    booking_context: BookingContext
     created_at: datetime
     updated_at: datetime
 
