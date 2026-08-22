@@ -1,9 +1,12 @@
 from bson import ObjectId
+from datetime import datetime, timezone
 
 from ai_core.conversation_service import (
     add_message_to_conversation,
     get_conversation_history,
+    build_booking_from_context,
     change_conversation_state,
+    execute_booking_from_conversation,
     update_conversation_booking_context,
 )
 from api.schemas.conversation import (
@@ -18,6 +21,7 @@ from database.repositories.conversations import (
 )
 from database.repositories.messages import messages_collection
 
+from database.repositories.bookings import bookings_collection
 
 def test_add_message_to_existing_conversation():
     conversation = create_conversation()
@@ -169,6 +173,147 @@ def test_update_conversation_booking_context_preserves_existing_data():
             second_update["booking_context"]["customer_name"]
             == "Dana"
         )
+
+    finally:
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
+
+
+def test_build_booking_from_partial_context_returns_none():
+    context = BookingContext(
+        service_id="service-123",
+        customer_name="Dana",
+    )
+
+    booking = build_booking_from_context(context)
+
+    assert booking is None
+
+
+def test_build_booking_from_complete_context_returns_booking_create():
+    booking_datetime = datetime(
+        2026,
+        8,
+        25,
+        17,
+        0,
+        tzinfo=timezone.utc,
+    )
+
+    context = BookingContext(
+        service_id="service-123",
+        customer_name="Dana",
+        customer_phone="0500000000",
+        booking_datetime=booking_datetime,
+        staff_id="staff-123",
+    )
+
+    booking = build_booking_from_context(context)
+
+    assert booking is not None
+    assert booking.service_id == "service-123"
+    assert booking.customer_name == "Dana"
+    assert booking.customer_phone == "0500000000"
+    assert booking.booking_datetime == booking_datetime
+    assert booking.staff_id == "staff-123"
+
+
+def test_execute_booking_from_missing_conversation():
+    booking, error = execute_booking_from_conversation(
+        "000000000000000000000000"
+    )
+
+    assert booking is None
+    assert error == "Conversation not found"
+
+def test_execute_booking_from_incomplete_context():
+    conversation = create_conversation()
+
+    try:
+        booking, error = execute_booking_from_conversation(
+            conversation["id"]
+        )
+
+        assert booking is None
+        assert error == "Booking context is incomplete"
+
+    finally:
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
+
+
+def test_execute_booking_from_complete_context_creates_booking():
+    conversation = create_conversation()
+    customer_name = "Conversation Booking Test"
+
+    bookings_collection.delete_many(
+        {"customer_name": customer_name}
+    )
+
+    try:
+        update_conversation_booking_context(
+            conversation_id=conversation["id"],
+            context=BookingContext(
+                service_id="6a779ed59b6b145fcfe108ab",
+                customer_name=customer_name,
+                customer_phone="0500000200",
+                booking_datetime=datetime(
+                    2026,
+                    8,
+                    20,
+                    10,
+                    0,
+                ),
+            ),
+        )
+
+        booking, error = execute_booking_from_conversation(
+            conversation["id"]
+        )
+
+        assert error is None
+        assert booking is not None
+        assert booking["customer_name"] == customer_name
+        assert booking["service_id"] == "6a779ed59b6b145fcfe108ab"
+        assert "id" in booking
+
+    finally:
+        bookings_collection.delete_many(
+            {"customer_name": customer_name}
+        )
+
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
+
+def test_execute_booking_from_conversation_returns_booking_engine_error():
+    conversation = create_conversation()
+
+    try:
+        update_conversation_booking_context(
+            conversation_id=conversation["id"],
+            context=BookingContext(
+                service_id="000000000000000000000000",
+                customer_name="Conversation Invalid Service Test",
+                customer_phone="0500000300",
+                booking_datetime=datetime(
+                    2026,
+                    8,
+                    20,
+                    10,
+                    0,
+                ),
+            ),
+        )
+
+        booking, error = execute_booking_from_conversation(
+            conversation["id"]
+        )
+
+        assert booking is None
+        assert error == "Service not found"
 
     finally:
         conversations_collection.delete_one(

@@ -5,6 +5,10 @@ from api.schemas.conversation import (
     ConversationState,
     MessageCreate,
 )
+
+
+from ai_core.booking_engine import execute_booking_request
+
 from database.repositories.conversations import(
     get_conversation_by_id,
     update_booking_context,
@@ -12,6 +16,7 @@ from database.repositories.conversations import(
 
 
 )
+from api.schemas.booking import BookingCreate
 
 from api.schemas.conversation import ConversationState
 
@@ -75,3 +80,44 @@ def update_conversation_booking_context(
         conversation_id=conversation_id,
         context=context,
     )
+
+def build_booking_from_context(
+    context: BookingContext,
+) -> BookingCreate | None:
+    required_fields = (
+        context.service_id,
+        context.customer_name,
+        context.customer_phone,
+        context.booking_datetime,
+    )
+
+    if any(value is None for value in required_fields):
+        return None
+
+    return BookingCreate(
+        service_id=context.service_id,
+        customer_name=context.customer_name,
+        customer_phone=context.customer_phone,
+        booking_datetime=context.booking_datetime,
+        staff_id=context.staff_id,
+    )
+
+
+def execute_booking_from_conversation(
+    conversation_id: str,
+) -> tuple[dict | None, str | None]:
+    conversation = get_conversation_by_id(conversation_id)
+
+    if conversation is None:
+        return None, "Conversation not found"
+
+    context = BookingContext(
+        **conversation["booking_context"]
+    )
+
+    booking = build_booking_from_context(context)
+
+    if booking is None:
+        return None, "Booking context is incomplete"
+
+    return execute_booking_request(booking)
