@@ -4,6 +4,7 @@ from api.routes.services import router as services_router
 from api.routes.bookings import router as bookings_router
 from api.routes.customers import router as customers_router
 from api.routes.staff import router as staff_router
+from api.routes.conversations import router as conversations_router
 
 app = FastAPI(
     title="AI Booking Agent API",
@@ -14,6 +15,7 @@ app.include_router(bookings_router)
 app.include_router(services_router)
 app.include_router(customers_router)
 app.include_router(staff_router)
+app.include_router(conversations_router)
 
 
 @app.get("/health")

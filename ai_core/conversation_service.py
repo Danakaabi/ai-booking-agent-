@@ -10,6 +10,7 @@ from api.schemas.conversation import (
 from ai_core.booking_engine import execute_booking_request
 
 from database.repositories.conversations import(
+    create_conversation,
     get_conversation_by_id,
     update_booking_context,
     update_conversation_state,
@@ -24,6 +25,10 @@ from database.repositories.messages import (
     create_message,
     get_messages_by_conversation_id,
 )
+
+def start_conversation() -> dict[str, Any]:
+    return create_conversation()
+
 
 def add_message_to_conversation(
     conversation_id: str,
@@ -121,3 +126,10 @@ def execute_booking_from_conversation(
         return None, "Booking context is incomplete"
 
     return execute_booking_request(booking)
+
+
+
+def get_conversation(
+    conversation_id: str,
+) -> dict[str, Any] | None:
+    return get_conversation_by_id(conversation_id)
