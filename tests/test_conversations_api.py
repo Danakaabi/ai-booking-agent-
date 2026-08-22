@@ -276,3 +276,33 @@ def test_create_booking_from_complete_context_endpoint():
         conversations_collection.delete_one(
             {"_id": ObjectId(conversation["id"])}
         )
+
+
+def test_create_booking_from_conversation_returns_service_not_found():
+    create_response = client.post("/conversations")
+    conversation = create_response.json()
+
+    try:
+        context_response = client.patch(
+            f"/conversations/{conversation['id']}/booking-context",
+            json={
+                "service_id": "000000000000000000000000",
+                "customer_name": "Conversation Missing Service API Test",
+                "customer_phone": "0500000500",
+                "booking_datetime": "2026-08-20T10:00:00",
+            },
+        )
+
+        assert context_response.status_code == 200
+
+        response = client.post(
+            f"/conversations/{conversation['id']}/bookings"
+        )
+
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Service not found"
+
+    finally:
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )

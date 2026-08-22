@@ -8,6 +8,7 @@ from ai_core.conversation_service import (
     update_conversation_booking_context,
 
 )
+from api.http_errors import raise_booking_http_error
 from api.schemas.conversation import BookingContext, MessageCreate
 
 
@@ -112,11 +113,7 @@ def create_booking_from_conversation_route(
             detail=error,
         )
 
-    if error is not None:
-        raise HTTPException(
-            status_code=422,
-            detail=error,
-        )
+    raise_booking_http_error(error)
 
     return booking
 
