@@ -19,6 +19,7 @@ def test_create_conversation_endpoint():
     try:
         assert "id" in data
         assert data["state"] == "active"
+        assert data["active_intent"] is None
         assert "booking_context" in data
         assert data["booking_context"] == {
             "service_id": None,

@@ -98,3 +98,22 @@ def test_process_message_returns_unknown_decision_for_unknown_intent():
     assert decision.intent == Intent.UNKNOWN
     assert decision.missing_fields == ()
     assert decision.next_action == NextAction.UNKNOWN
+
+
+def test_process_message_continues_active_booking_intent():
+    current_context = BookingContext(
+        service_id="service-123",
+        customer_name="Dana",
+    )
+
+    decision, context_update = process_message(
+        "0501234567",
+        current_context=current_context,
+        services_by_id={},
+        staff_members=[],
+        active_intent=Intent.BOOK,
+    )
+
+    assert decision.intent == Intent.BOOK
+    assert decision.next_action == NextAction.ASK_USER
+    assert context_update.customer_phone == "0501234567"

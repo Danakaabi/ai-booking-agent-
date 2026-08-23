@@ -16,10 +16,14 @@ def process_message(
     current_context: BookingContext,
     services_by_id: dict[str, dict[str, Any]],
     staff_members: list[dict[str, Any]],
+    active_intent: Intent | None = None,
 ) -> tuple[AIDecision, BookingContext]:
     """Process a user message through the deterministic AI core."""
 
     intent = detect_intent(message)
+
+    if intent is Intent.UNKNOWN and active_intent is not None:
+        intent = active_intent
 
     if intent is Intent.UNKNOWN:
         return (

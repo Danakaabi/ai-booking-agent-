@@ -3,6 +3,8 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
+from ai_core.intent import Intent
+
 
 class MessageRole(str, Enum):
     USER = "user"
@@ -39,6 +41,7 @@ class Conversation(BaseModel):
 
     id: str
     state: ConversationState
+    active_intent: Intent | None = None
     booking_context: BookingContext
     created_at: datetime
     updated_at: datetime

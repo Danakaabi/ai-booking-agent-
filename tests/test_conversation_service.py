@@ -406,3 +406,56 @@ def test_process_conversation_message_preserves_existing_context():
         conversations_collection.delete_one(
             {"_id": ObjectId(conversation["id"])}
         )
+
+
+def test_process_conversation_message_continues_booking_across_messages():
+    conversation = create_conversation()
+
+    try:
+        first_decision = process_conversation_message(
+            conversation_id=conversation["id"],
+            message="I want to book Haircut",
+        )
+
+        assert first_decision is not None
+        assert first_decision.intent == Intent.BOOK
+        assert first_decision.next_action == NextAction.ASK_USER
+
+        after_first_message = get_conversation_by_id(
+            conversation["id"]
+        )
+
+        assert after_first_message is not None
+        assert after_first_message["active_intent"] == Intent.BOOK
+        assert (
+            after_first_message["booking_context"]["service_id"]
+            is not None
+        )
+
+        second_decision = process_conversation_message(
+            conversation_id=conversation["id"],
+            message="0501234567",
+        )
+
+        assert second_decision is not None
+        assert second_decision.intent == Intent.BOOK
+        assert second_decision.next_action == NextAction.ASK_USER
+
+        after_second_message = get_conversation_by_id(
+            conversation["id"]
+        )
+
+        assert after_second_message is not None
+        assert (
+            after_second_message["booking_context"]["service_id"]
+            is not None
+        )
+        assert (
+            after_second_message["booking_context"]["customer_phone"]
+            == "0501234567"
+        )
+
+    finally:
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )

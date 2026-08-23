@@ -10,12 +10,14 @@ from api.schemas.conversation import (
 from ai_core.booking_engine import execute_booking_request
 from ai_core.decision import AIDecision
 from ai_core.orchestrator import process_message
+from ai_core.intent import Intent
 
 from database.repositories.conversations import(
     create_conversation,
     get_conversation_by_id,
     update_booking_context,
     update_conversation_state,
+    update_active_intent,
 
 
 )
@@ -154,12 +156,27 @@ def process_conversation_message(
         **conversation["booking_context"]
     )
 
+    stored_active_intent = conversation.get("active_intent")
+
+    active_intent = (
+        Intent(stored_active_intent)
+        if stored_active_intent is not None
+        else None
+    )
+
     decision, context_update = process_message(
         message,
         current_context=current_context,
         services_by_id=get_active_services_by_id(),
         staff_members=get_all_staff(),
+        active_intent=active_intent,
     )
+
+    if decision.intent is Intent.BOOK and active_intent != Intent.BOOK:
+        update_active_intent(
+            conversation_id=conversation_id,
+            intent=Intent.BOOK,
+        )
 
     if context_update.model_dump(exclude_none=True):
         update_booking_context(

@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
 from typing import Any
+
+from ai_core.intent import Intent
 from api.schemas.conversation import BookingContext, ConversationState
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -15,6 +17,7 @@ def create_conversation() -> dict[str, Any]:
 
     conversation_data = {
         "state": ConversationState.ACTIVE,
+        "active_intent": None,
         "booking_context": BookingContext().model_dump(),
         "created_at": now,
         "updated_at": now,
@@ -107,3 +110,30 @@ def update_booking_context(
         return None
 
     return get_conversation_by_id(conversation_id)
+
+def update_active_intent(
+    conversation_id: str,
+    intent: Intent | None,
+) -> dict[str, Any] | None:
+    """Update the active workflow intent for a conversation."""
+
+    try:
+        object_id = ObjectId(conversation_id)
+    except (InvalidId, TypeError):
+        return None
+
+    result = conversations_collection.update_one(
+        {"_id": object_id},
+        {
+            "$set": {
+                "active_intent": intent,
+                "updated_at": datetime.now(timezone.utc),
+            }
+        },
+    )
+
+    if result.matched_count == 0:
+        return None
+
+    return get_conversation_by_id(conversation_id)
+

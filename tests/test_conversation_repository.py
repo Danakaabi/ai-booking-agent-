@@ -1,9 +1,11 @@
+from ai_core.intent import Intent
 from database.repositories.conversations import (
     conversations_collection,
     create_conversation,
     get_conversation_by_id,
     update_conversation_state,
     update_booking_context,
+    update_active_intent,
 
 )
 from api.schemas.conversation import(
@@ -19,6 +21,7 @@ def test_create_conversation():
     try:
         assert "id" in conversation
         assert conversation["state"] == ConversationState.ACTIVE
+        assert conversation["active_intent"] is None
         assert "created_at" in conversation
         assert "updated_at" in conversation
         assert "booking_context" in conversation
@@ -143,3 +146,20 @@ def test_update_booking_context_returns_none_for_missing_conversation():
     )
 
     assert result is None
+
+def test_update_active_intent():
+    conversation = create_conversation()
+
+    try:
+        updated = update_active_intent(
+            conversation["id"],
+            Intent.BOOK,
+        )
+
+        assert updated is not None
+        assert updated["active_intent"] == Intent.BOOK
+
+    finally:
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
