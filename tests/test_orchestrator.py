@@ -14,7 +14,7 @@ def test_process_message_combines_new_entities_with_existing_context():
         booking_datetime=datetime(2026, 8, 24, 17, 0),
     )
 
-    decision = process_message(
+    decision, context_update = process_message(
         "I want to book, my phone is 0501234567",
         current_context=current_context,
         services_by_id={
@@ -37,7 +37,7 @@ def test_process_message_asks_user_when_context_is_still_incomplete():
         customer_name="Dana",
     )
 
-    decision = process_message(
+    decision, context_update = process_message(
         "I want to book, my phone is 0501234567",
         current_context=current_context,
         services_by_id={
@@ -63,7 +63,7 @@ def test_process_message_resolves_service_name_during_full_flow():
         booking_datetime=datetime(2026, 8, 24, 17, 0),
     )
 
-    decision = process_message(
+    decision, context_update = process_message(
         "I want to book Haircut",
         current_context=current_context,
         services_by_id={
@@ -80,9 +80,15 @@ def test_process_message_resolves_service_name_during_full_flow():
     assert decision.next_action == NextAction.CALL_TOOL
     assert decision.business_action == BusinessAction.CREATE_BOOKING
 
+    assert context_update.service_id == "service-123"
+    assert context_update.customer_name is None
+    assert context_update.customer_phone is None
+    assert context_update.booking_datetime is None
+    assert context_update.staff_id is None
+
 
 def test_process_message_returns_unknown_decision_for_unknown_intent():
-    decision = process_message(
+    decision, context_update = process_message(
         "Hello there",
         current_context=BookingContext(),
         services_by_id={},

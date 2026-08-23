@@ -8,6 +8,8 @@ from api.schemas.conversation import (
 
 
 from ai_core.booking_engine import execute_booking_request
+from ai_core.decision import AIDecision
+from ai_core.orchestrator import process_message
 
 from database.repositories.conversations import(
     create_conversation,
@@ -20,6 +22,9 @@ from database.repositories.conversations import(
 from api.schemas.booking import BookingCreate
 
 from api.schemas.conversation import ConversationState
+
+from database.repositories.services import get_active_services_by_id
+from database.repositories.staff import get_all_staff
 
 from database.repositories.messages import (
     create_message,
@@ -133,3 +138,33 @@ def get_conversation(
     conversation_id: str,
 ) -> dict[str, Any] | None:
     return get_conversation_by_id(conversation_id)
+
+def process_conversation_message(
+    conversation_id: str,
+    message: str,
+) -> AIDecision | None:
+    """Process a user message through the AI core and persist context updates."""
+
+    conversation = get_conversation_by_id(conversation_id)
+
+    if conversation is None:
+        return None
+
+    current_context = BookingContext(
+        **conversation["booking_context"]
+    )
+
+    decision, context_update = process_message(
+        message,
+        current_context=current_context,
+        services_by_id=get_active_services_by_id(),
+        staff_members=get_all_staff(),
+    )
+
+    if context_update.model_dump(exclude_none=True):
+        update_booking_context(
+            conversation_id=conversation_id,
+            context=context_update,
+        )
+
+    return decision

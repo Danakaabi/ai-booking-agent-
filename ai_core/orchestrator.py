@@ -16,15 +16,18 @@ def process_message(
     current_context: BookingContext,
     services_by_id: dict[str, dict[str, Any]],
     staff_members: list[dict[str, Any]],
-) -> AIDecision:
+) -> tuple[AIDecision, BookingContext]:
     """Process a user message through the deterministic AI core."""
 
     intent = detect_intent(message)
 
     if intent is Intent.UNKNOWN:
-        return AIDecision(
-            intent=Intent.UNKNOWN,
-            next_action=NextAction.UNKNOWN,
+        return (
+            AIDecision(
+                intent=Intent.UNKNOWN,
+                next_action=NextAction.UNKNOWN,
+            ),
+            BookingContext(),
         )
 
     service_names = tuple(
@@ -60,8 +63,10 @@ def process_message(
         update=context_update.model_dump(exclude_none=True)
     )
 
-    return make_decision(
+    decision = make_decision(
         intent,
         merged_context,
         entities=entities,
     )
+
+    return decision, context_update

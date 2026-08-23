@@ -4,12 +4,17 @@ from ai_core.conversation_service import (
     execute_booking_from_conversation,
     get_conversation,
     get_conversation_history,
+    process_conversation_message,
     start_conversation,
     update_conversation_booking_context,
 
 )
 from api.http_errors import raise_booking_http_error
-from api.schemas.conversation import BookingContext, MessageCreate
+from api.schemas.conversation import (
+    BookingContext,
+    MessageCreate,
+    MessageRole,
+)
 
 
 
@@ -52,6 +57,12 @@ def add_message_route(
         raise HTTPException(
             status_code=404,
             detail="Conversation not found",
+        )
+
+    if message.role is MessageRole.USER:
+        process_conversation_message(
+            conversation_id=conversation_id,
+            message=message.content,
         )
 
     return created_message

@@ -306,3 +306,78 @@ def test_create_booking_from_conversation_returns_service_not_found():
         conversations_collection.delete_one(
             {"_id": ObjectId(conversation["id"])}
         )
+
+def test_user_message_updates_conversation_context_through_ai():
+    create_response = client.post("/conversations")
+    conversation = create_response.json()
+
+    try:
+        response = client.post(
+            f"/conversations/{conversation['id']}/messages",
+            json={
+                "role": "user",
+                "content": "I want to book Haircut",
+            },
+        )
+
+        assert response.status_code == 200
+
+        conversation_response = client.get(
+            f"/conversations/{conversation['id']}"
+        )
+
+        assert conversation_response.status_code == 200
+
+        updated_conversation = conversation_response.json()
+
+        assert (
+            updated_conversation["booking_context"]["service_id"]
+            is not None
+        )
+
+    finally:
+        messages_collection.delete_many(
+            {"conversation_id": conversation["id"]}
+        )
+
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
+
+
+def test_assistant_message_does_not_trigger_ai_context_update():
+    create_response = client.post("/conversations")
+    conversation = create_response.json()
+
+    try:
+        response = client.post(
+            f"/conversations/{conversation['id']}/messages",
+            json={
+                "role": "assistant",
+                "content": "I want to book Haircut",
+            },
+        )
+
+        assert response.status_code == 200
+
+        conversation_response = client.get(
+            f"/conversations/{conversation['id']}"
+        )
+
+        assert conversation_response.status_code == 200
+
+        updated_conversation = conversation_response.json()
+
+        assert (
+            updated_conversation["booking_context"]["service_id"]
+            is None
+        )
+
+    finally:
+        messages_collection.delete_many(
+            {"conversation_id": conversation["id"]}
+        )
+
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )

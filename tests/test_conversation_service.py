@@ -1,4 +1,6 @@
 from bson import ObjectId
+from ai_core.decision import NextAction
+from ai_core.intent import Intent
 from datetime import datetime, timezone
 
 from ai_core.conversation_service import (
@@ -7,6 +9,7 @@ from ai_core.conversation_service import (
     build_booking_from_context,
     change_conversation_state,
     execute_booking_from_conversation,
+    process_conversation_message,
     update_conversation_booking_context,
 )
 from api.schemas.conversation import (
@@ -18,10 +21,12 @@ from api.schemas.conversation import (
 from database.repositories.conversations import (
     conversations_collection,
     create_conversation,
+    get_conversation_by_id,
 )
 from database.repositories.messages import messages_collection
 
 from database.repositories.bookings import bookings_collection
+from database.repositories.services import get_active_services_by_id
 
 def test_add_message_to_existing_conversation():
     conversation = create_conversation()
@@ -314,6 +319,88 @@ def test_execute_booking_from_conversation_returns_booking_engine_error():
 
         assert booking is None
         assert error == "Service not found"
+
+    finally:
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
+
+def test_process_conversation_message_persists_ai_context_update():
+    conversation = create_conversation()
+    services_by_id = get_active_services_by_id()
+
+    haircut_service_id = next(
+        service_id
+        for service_id, service in services_by_id.items()
+        if service["name"] == "Haircut"
+    )
+
+    try:
+        decision = process_conversation_message(
+            conversation_id=conversation["id"],
+            message="I want to book Haircut",
+        )
+
+        assert decision is not None
+        assert decision.intent == Intent.BOOK
+        assert decision.next_action == NextAction.ASK_USER
+
+        updated_conversation = get_conversation_by_id(
+            conversation["id"]
+        )
+
+        assert updated_conversation is not None
+        assert (
+            updated_conversation["booking_context"]["service_id"]
+            == haircut_service_id
+        )
+
+    finally:
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
+
+
+def test_process_conversation_message_preserves_existing_context():
+    conversation = create_conversation()
+    services_by_id = get_active_services_by_id()
+
+    haircut_service_id = next(
+        service_id
+        for service_id, service in services_by_id.items()
+        if service["name"] == "Haircut"
+    )
+
+    try:
+        update_conversation_booking_context(
+            conversation_id=conversation["id"],
+            context=BookingContext(
+                customer_name="Dana",
+            ),
+        )
+
+        decision = process_conversation_message(
+            conversation_id=conversation["id"],
+            message="I want to book Haircut",
+        )
+
+        assert decision is not None
+        assert decision.intent == Intent.BOOK
+        assert decision.next_action == NextAction.ASK_USER
+
+        updated_conversation = get_conversation_by_id(
+            conversation["id"]
+        )
+
+        assert updated_conversation is not None
+        assert (
+            updated_conversation["booking_context"]["service_id"]
+            == haircut_service_id
+        )
+        assert (
+            updated_conversation["booking_context"]["customer_name"]
+            == "Dana"
+        )
 
     finally:
         conversations_collection.delete_one(
