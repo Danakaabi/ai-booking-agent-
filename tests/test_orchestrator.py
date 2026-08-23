@@ -1,0 +1,92 @@
+from datetime import datetime
+
+from ai_core.decision import NextAction
+from ai_core.intent import Intent
+from ai_core.orchestrator import process_message
+from api.schemas.conversation import BookingContext
+from ai_core.missing_fields import MissingField
+
+def test_process_message_combines_new_entities_with_existing_context():
+    current_context = BookingContext(
+        service_id="service-123",
+        customer_name="Dana",
+        booking_datetime=datetime(2026, 8, 24, 17, 0),
+    )
+
+    decision = process_message(
+        "I want to book, my phone is 0501234567",
+        current_context=current_context,
+        services_by_id={
+            "service-123": {
+                "name": "Haircut",
+            }
+        },
+        staff_members=[],
+    )
+
+    assert decision.intent == Intent.BOOK
+    assert decision.entities.customer_phone == "0501234567"
+    assert decision.missing_fields == ()
+    assert decision.next_action == NextAction.CALL_TOOL
+
+
+def test_process_message_asks_user_when_context_is_still_incomplete():
+    current_context = BookingContext(
+        service_id="service-123",
+        customer_name="Dana",
+    )
+
+    decision = process_message(
+        "I want to book, my phone is 0501234567",
+        current_context=current_context,
+        services_by_id={
+            "service-123": {
+                "name": "Haircut",
+            }
+        },
+        staff_members=[],
+    )
+
+    assert decision.intent == Intent.BOOK
+    assert decision.entities.customer_phone == "0501234567"
+    assert decision.missing_fields == (
+        MissingField.BOOKING_DATETIME,
+    )
+    assert decision.next_action == NextAction.ASK_USER
+
+
+def test_process_message_resolves_service_name_during_full_flow():
+    current_context = BookingContext(
+        customer_name="Dana",
+        customer_phone="0501234567",
+        booking_datetime=datetime(2026, 8, 24, 17, 0),
+    )
+
+    decision = process_message(
+        "I want to book Haircut",
+        current_context=current_context,
+        services_by_id={
+            "service-123": {
+                "name": "Haircut",
+            }
+        },
+        staff_members=[],
+    )
+
+    assert decision.intent == Intent.BOOK
+    assert decision.entities.service_name == "Haircut"
+    assert decision.missing_fields == ()
+    assert decision.next_action == NextAction.CALL_TOOL
+
+
+def test_process_message_returns_unknown_decision_for_unknown_intent():
+    decision = process_message(
+        "Hello there",
+        current_context=BookingContext(),
+        services_by_id={},
+        staff_members=[],
+    )
+
+    assert decision.intent == Intent.UNKNOWN
+    assert decision.missing_fields == ()
+    assert decision.next_action == NextAction.UNKNOWN
