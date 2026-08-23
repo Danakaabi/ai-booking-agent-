@@ -4,12 +4,14 @@ from api.schemas.conversation import (
     BookingContext,
     ConversationState,
     MessageCreate,
+    MessageRole,
 )
 
 
 from ai_core.booking_engine import execute_booking_request
-from ai_core.decision import AIDecision
+from ai_core.decision import AIDecision, NextAction
 from ai_core.orchestrator import process_message
+from ai_core.response_generator import generate_response
 from ai_core.intent import Intent
 
 from database.repositories.conversations import(
@@ -182,6 +184,18 @@ def process_conversation_message(
         update_booking_context(
             conversation_id=conversation_id,
             context=context_update,
+        )
+
+    if decision.next_action in (
+        NextAction.ASK_USER,
+        NextAction.UNKNOWN,
+    ):
+        create_message(
+            conversation_id=conversation_id,
+            message=MessageCreate(
+                role=MessageRole.ASSISTANT,
+                content=generate_response(decision),
+            ),
         )
 
     return decision

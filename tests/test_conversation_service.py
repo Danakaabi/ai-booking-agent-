@@ -459,3 +459,73 @@ def test_process_conversation_message_continues_booking_across_messages():
         conversations_collection.delete_one(
             {"_id": ObjectId(conversation["id"])}
         )
+
+
+def test_process_conversation_message_creates_assistant_clarification():
+    conversation = create_conversation()
+
+    try:
+        decision = process_conversation_message(
+            conversation_id=conversation["id"],
+            message="I want to book Haircut",
+        )
+
+        assert decision is not None
+        assert decision.intent == Intent.BOOK
+        assert decision.next_action == NextAction.ASK_USER
+
+        history = get_conversation_history(
+            conversation["id"]
+        )
+
+        assert history is not None
+        assert len(history) == 1
+        assert history[0]["role"] == MessageRole.ASSISTANT
+        assert (
+            history[0]["content"]
+            == "What name should I use for the booking?"
+        )
+
+    finally:
+        messages_collection.delete_many(
+            {"conversation_id": conversation["id"]}
+        )
+
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
+
+
+def test_process_conversation_message_creates_unknown_assistant_response():
+    conversation = create_conversation()
+
+    try:
+        decision = process_conversation_message(
+            conversation_id=conversation["id"],
+            message="Something completely unrelated",
+        )
+
+        assert decision is not None
+        assert decision.intent == Intent.UNKNOWN
+        assert decision.next_action == NextAction.UNKNOWN
+
+        history = get_conversation_history(
+            conversation["id"]
+        )
+
+        assert history is not None
+        assert len(history) == 1
+        assert history[0]["role"] == MessageRole.ASSISTANT
+        assert (
+            history[0]["content"]
+            == "I could not understand your request. Please try again."
+        )
+
+    finally:
+        messages_collection.delete_many(
+            {"conversation_id": conversation["id"]}
+        )
+
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )

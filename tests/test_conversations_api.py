@@ -141,9 +141,19 @@ def test_get_conversation_history_endpoint():
 
         history = response.json()
 
-        assert len(history) == 2
+        assert len(history) == 3
+
+        assert history[0]["role"] == "user"
         assert history[0]["content"] == "Hello"
-        assert history[1]["content"] == "Hi, how can I help?"
+
+        assert history[1]["role"] == "assistant"
+        assert (
+            history[1]["content"]
+            == "I could not understand your request. Please try again."
+        )
+
+        assert history[2]["role"] == "assistant"
+        assert history[2]["content"] == "Hi, how can I help?"
 
     finally:
         messages_collection.delete_many(
