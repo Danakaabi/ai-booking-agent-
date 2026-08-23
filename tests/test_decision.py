@@ -1,6 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
+from ai_core.business_action import BusinessAction
 from ai_core.decision import AIDecision, NextAction
 from ai_core.entities import ExtractedEntities
 from ai_core.intent import Intent
@@ -61,3 +62,23 @@ def test_ai_decision_rejects_invalid_missing_field():
             missing_fields=("not_a_real_field",),
             next_action=NextAction.ASK_USER,
         )
+
+
+
+def test_ai_decision_accepts_business_action():
+    decision = AIDecision(
+        intent=Intent.BOOK,
+        next_action=NextAction.CALL_TOOL,
+        business_action=BusinessAction.CREATE_BOOKING,
+    )
+
+    assert decision.business_action == BusinessAction.CREATE_BOOKING
+
+
+def test_ai_decision_business_action_is_optional():
+    decision = AIDecision(
+        intent=Intent.BOOK,
+        next_action=NextAction.ASK_USER,
+    )
+
+    assert decision.business_action is None

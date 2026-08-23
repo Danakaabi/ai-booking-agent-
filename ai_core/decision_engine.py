@@ -1,3 +1,4 @@
+from ai_core.business_action import BusinessAction
 from ai_core.decision import AIDecision, NextAction
 from ai_core.entities import ExtractedEntities
 from ai_core.intent import Intent
@@ -33,4 +34,9 @@ def make_decision(
         entities=entities or ExtractedEntities(),
         missing_fields=missing_fields,
         next_action=next_action,
+        business_action=(
+            BusinessAction.CREATE_BOOKING
+            if next_action is NextAction.CALL_TOOL
+            else None
+        ),
     )

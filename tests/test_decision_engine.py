@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 
+from ai_core.business_action import BusinessAction
 from ai_core.decision import NextAction
 from ai_core.decision_engine import make_decision
 from ai_core.intent import Intent
@@ -22,6 +23,7 @@ def test_book_decision_asks_user_when_required_information_is_missing():
 
     assert decision.intent == Intent.BOOK
     assert decision.next_action == NextAction.ASK_USER
+    assert decision.business_action is None
     assert decision.missing_fields == (
         MissingField.CUSTOMER_PHONE,
         MissingField.BOOKING_DATETIME,
@@ -43,6 +45,7 @@ def test_book_decision_calls_tool_when_context_is_complete():
 
     assert decision.intent == Intent.BOOK
     assert decision.next_action == NextAction.CALL_TOOL
+    assert decision.business_action == BusinessAction.CREATE_BOOKING
     assert decision.missing_fields == ()
 
 

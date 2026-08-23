@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from ai_core.business_action import BusinessAction
 from ai_core.decision import NextAction
 from ai_core.intent import Intent
 from ai_core.orchestrator import process_message
@@ -77,6 +78,7 @@ def test_process_message_resolves_service_name_during_full_flow():
     assert decision.entities.service_name == "Haircut"
     assert decision.missing_fields == ()
     assert decision.next_action == NextAction.CALL_TOOL
+    assert decision.business_action == BusinessAction.CREATE_BOOKING
 
 
 def test_process_message_returns_unknown_decision_for_unknown_intent():

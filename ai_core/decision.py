@@ -2,6 +2,7 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
+from ai_core.business_action import BusinessAction
 from ai_core.entities import ExtractedEntities
 from ai_core.intent import Intent
 from ai_core.missing_fields import MissingField
@@ -26,3 +27,4 @@ class AIDecision(BaseModel):
     )
     missing_fields: tuple[MissingField, ...] = ()
     next_action: NextAction
+    business_action: BusinessAction | None = None
