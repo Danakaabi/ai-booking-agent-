@@ -19,8 +19,8 @@
   <img src="https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white" alt="FastAPI">
   <img src="https://img.shields.io/badge/MongoDB-Database-47A248?logo=mongodb&logoColor=white" alt="MongoDB">
   <img src="https://img.shields.io/badge/Pydantic-Validation-E92063" alt="Pydantic">
-  <img src="https://img.shields.io/badge/Pytest-123%20Passing-0A9EDC?logo=pytest&logoColor=white" alt="Tests">
-  <img src="https://img.shields.io/badge/Phase%206-Completed-success" alt="Phase 6">
+  <img src="https://img.shields.io/badge/Pytest-194%20Passing-0A9EDC?logo=pytest&logoColor=white" alt="Tests">
+  <img src="https://img.shields.io/badge/Phase%207-Completed-success" alt="Phase 7">
   <img src="https://img.shields.io/badge/Status-Active%20Development-orange" alt="Status">
 </p>
 
@@ -30,7 +30,7 @@
 
 **AI Booking Agent** is a reusable booking backend designed to evolve into an AI-powered booking agent.
 
-The project is intentionally developed **backend-first** so that booking rules, scheduling, availability, staff assignment, conflict detection, validation, conversation state, context management, and persistence are reliable before introducing LLM reasoning.
+The project is intentionally developed **backend-first** so that booking rules, scheduling, availability, staff assignment, conflict detection, validation, conversation state, context management, AI decision logic, and persistence are reliable before introducing an external LLM.
 
 ```text
 User / Client
@@ -39,7 +39,7 @@ FastAPI
       ↓
 Conversation API / Booking API
       ↓
-Conversation Service / Booking Engine
+Conversation Service / AI Core / Booking Engine
       ↓
 Validation & Business Rules
       ↓
@@ -48,7 +48,7 @@ Repository Layer
 MongoDB
 ```
 
-The future AI layer will interact with the system through controlled business tools rather than direct database access.
+The AI layer is designed to interact with the system through controlled business actions rather than direct database access.
 
 This keeps probabilistic AI reasoning separate from deterministic booking rules, conversation infrastructure, and persistence.
 
@@ -68,12 +68,14 @@ This keeps probabilistic AI reasoning separate from deterministic booking rules,
 >
 > **Phase 6 — Conversation System: Completed**
 >
-> **Phase 7 — AI Core: Next**
+> **Phase 7 — AI Core & Controlled Execution: Completed**
+>
+> **Phase 8 — AI Business Tools: Next**
 
 Current automated test status:
 
 ```text
-123 passed
+194 passed
 1 warning
 0 failures
 ```
@@ -177,6 +179,24 @@ A FastAPI/Starlette TestClient dependency deprecation warning is currently emitt
 - [x] Conversation REST API
 - [x] Shared booking business error mapping
 
+## AI Core
+
+- [x] Intent detection
+- [x] Entity extraction
+- [x] Entity resolution
+- [x] Context preparation
+- [x] Existing-context merging
+- [x] Missing-field detection
+- [x] Structured AI decisions
+- [x] Booking-intent continuation across messages
+- [x] Decision engine
+- [x] Response generation
+- [x] Controlled business-action selection
+- [x] Tool executor
+- [x] Conversation-to-tool execution
+- [x] Booking creation through the existing Booking Engine
+- [x] No direct AI access to MongoDB
+
 ## Testing
 
 - [x] Schema tests
@@ -201,13 +221,23 @@ A FastAPI/Starlette TestClient dependency deprecation warning is currently emitt
 - [x] Booking context tests
 - [x] Conversation API tests
 - [x] Conversation-to-booking integration tests
+- [x] Intent detection tests
+- [x] Entity extraction tests
+- [x] Entity resolution tests
+- [x] Context preparation tests
+- [x] Missing information tests
+- [x] Resolved entity tests
+- [x] Decision engine tests
+- [x] Orchestrator tests
+- [x] Response generator tests
+- [x] Tool executor tests
 - [x] Shared HTTP error mapping tests
 - [x] Full regression suite
 
 Current result:
 
 ```text
-123 passed
+194 passed
 1 warning
 0 failures
 ```
@@ -220,11 +250,27 @@ Current result:
 AI Booking Agent
 │
 ├── ai_core/
+│   ├── __init__.py
 │   ├── availability.py
+│   ├── available_slots.py
 │   ├── booking_engine.py
+│   ├── business_action.py
+│   ├── context_preparation.py
 │   ├── conversation_service.py
+│   ├── decision.py
+│   ├── decision_engine.py
+│   ├── entities.py
+│   ├── entity_extractor.py
+│   ├── entity_resolver.py
+│   ├── intent.py
+│   ├── intent_detector.py
+│   ├── missing_fields.py
+│   ├── missing_information.py
+│   ├── orchestrator.py
+│   ├── resolved_entities.py
+│   ├── response_generator.py
 │   ├── staff_availability.py
-│   └── available_slots.py
+│   └── tool_executor.py
 │
 ├── api/
 │   ├── main.py
@@ -257,18 +303,29 @@ AI Booking Agent
 │       └── staff_availability.py
 │
 ├── tests/
-│   ├── test_health.py
-│   ├── test_services.py
-│   ├── test_bookings.py
+│   ├── __init__.py
 │   ├── test_availability.py
+│   ├── test_bookings.py
+│   ├── test_context_preparation.py
+│   ├── test_conversation_repository.py
+│   ├── test_conversation_schemas.py
+│   ├── test_conversation_service.py
+│   ├── test_conversations_api.py
 │   ├── test_customers.py
+│   ├── test_decision.py
+│   ├── test_decision_engine.py
+│   ├── test_entities.py
+│   ├── test_health.py
+│   ├── test_intent.py
+│   ├── test_message_repository.py
+│   ├── test_missing_information.py
+│   ├── test_orchestrator.py
+│   ├── test_resolved_entities.py
+│   ├── test_response_generator.py
+│   ├── test_services.py
 │   ├── test_staff.py
 │   ├── test_staff_availability.py
-│   ├── test_conversation_schemas.py
-│   ├── test_conversation_repository.py
-│   ├── test_message_repository.py
-│   ├── test_conversation_service.py
-│   └── test_conversations_api.py
+│   └── test_tool_executor.py
 │
 ├── docs/
 ├── .env.example
@@ -287,12 +344,40 @@ API Routes
    ↓
 Pydantic Validation
    ↓
-Conversation Service / Booking Engine
+Conversation Service / AI Core / Booking Engine
    ↓
 Business Rules & Orchestration
    ↓
 Repository Layer
    ↓
+MongoDB
+```
+
+## AI Conversation Flow
+
+```text
+User Message
+      ↓
+Intent Detection
+      ↓
+Entity Extraction
+      ↓
+Entity Resolution
+      ↓
+Context Preparation
+      ↓
+Merge With Existing Context
+      ↓
+Decision Engine
+      ↓
+ASK_USER / CALL_TOOL / UNKNOWN
+      ↓
+Response Generator / Tool Executor
+      ↓
+Booking Engine
+      ↓
+Repositories
+      ↓
 MongoDB
 ```
 
@@ -307,6 +392,12 @@ Messages + State
    ↓
 Booking Context
    ↓
+AI Core
+   ↓
+Structured Decision
+   ↓
+Business Action
+   ↓
 BookingCreate
    ↓
 Booking Engine
@@ -318,7 +409,7 @@ Repositories
 MongoDB
 ```
 
-This separation prevents HTTP routing code from becoming tightly coupled to database operations, conversation state, or scheduling rules.
+This separation prevents HTTP routing code from becoming tightly coupled to database operations, conversation state, AI decisions, or scheduling rules.
 
 ---
 
@@ -450,7 +541,7 @@ PATCH /conversations/{conversation_id}/booking-context
 POST /conversations/{conversation_id}/bookings
 ```
 
-The conversation API provides persistent conversation infrastructure without introducing an LLM.
+The conversation API provides persistent conversation infrastructure for the AI Core while remaining independent from an external LLM.
 
 A new conversation starts with:
 
@@ -530,6 +621,117 @@ customer_name = Dana
 Final Context:
 service_id = service-123
 customer_name = Dana
+```
+
+### AI Conversation Processing
+
+User messages are processed through the AI Core.
+
+```text
+User Message
+      ↓
+Intent Detection
+      ↓
+Entity Extraction
+      ↓
+Entity Resolution
+      ↓
+Context Preparation
+      ↓
+Merge With Existing Context
+      ↓
+Decision Engine
+```
+
+The decision engine can determine whether the system should:
+
+```text
+ASK_USER
+CALL_TOOL
+UNKNOWN
+```
+
+For incomplete booking requests, the system identifies missing information and generates a clarification response.
+
+For example:
+
+```text
+User:
+I want to book Haircut
+
+      ↓
+
+Intent:
+BOOK
+
+      ↓
+
+Service:
+Haircut
+
+      ↓
+
+Missing:
+customer_phone
+booking_datetime
+
+      ↓
+
+Decision:
+ASK_USER
+```
+
+The booking intent can continue across multiple messages:
+
+```text
+Message 1:
+I want to book Haircut
+
+      ↓
+
+Context:
+service_id = Haircut
+
+      ↓
+
+ASK_USER
+
+Message 2:
+0501234567
+
+      ↓
+
+Existing Context + New Entity
+
+      ↓
+
+Context:
+service_id = Haircut
+customer_phone = 0501234567
+
+      ↓
+
+Next Decision
+```
+
+When the required context becomes complete, the decision layer can select a controlled business action instead of accessing persistence directly.
+
+```text
+Complete Context
+      ↓
+Decision Engine
+      ↓
+CALL_TOOL
+      ↓
+Business Action
+      ↓
+Tool Executor
+      ↓
+Booking Engine
+      ↓
+Repositories
+      ↓
+MongoDB
 ```
 
 ### Create Booking from Conversation
@@ -660,18 +862,127 @@ Booking Engine
 The current architecture follows:
 
 ```text
-API Route / Conversation Service
-             ↓
-        Booking Engine
-             ↓
-        Business Rules
-             ↓
-        Repositories
-             ↓
-           MongoDB
+API Route / Conversation Service / AI Tool Executor
+                     ↓
+                Booking Engine
+                     ↓
+                Business Rules
+                     ↓
+                Repositories
+                     ↓
+                   MongoDB
 ```
 
-This is important for the future AI architecture because FastAPI routes, conversation workflows, and AI business tools can reuse the same deterministic booking engine.
+This is important for the AI architecture because FastAPI routes, conversation workflows, and controlled AI business actions can reuse the same deterministic booking engine.
+
+---
+
+# AI Core
+
+The AI Core introduces a deterministic decision layer between user conversation and the booking engine.
+
+Its responsibility is to interpret conversation input and decide what should happen next without duplicating booking business rules.
+
+```text
+AI Core
+│
+├── Intent Detection
+├── Entity Extraction
+├── Entity Resolution
+├── Context Preparation
+├── Missing-Field Detection
+├── Decision Engine
+├── Response Generation
+├── Orchestration
+└── Controlled Tool Execution
+```
+
+The AI Core can determine:
+
+```text
+What does the user want?
+      ↓
+What information was provided?
+      ↓
+What information already exists in context?
+      ↓
+What information is still missing?
+      ↓
+Should the system ask the user or execute an action?
+```
+
+Current decision actions include:
+
+```text
+ASK_USER
+UPDATE_CONTEXT
+CALL_TOOL
+COMPLETE
+UNKNOWN
+```
+
+Business actions are represented separately from conversational decisions.
+
+For example:
+
+```text
+Intent:
+BOOK
+
+      ↓
+
+Required Context Complete
+
+      ↓
+
+Next Action:
+CALL_TOOL
+
+      ↓
+
+Business Action:
+CREATE_BOOKING
+
+      ↓
+
+Tool Executor
+
+      ↓
+
+Booking Engine
+```
+
+This separation ensures that the AI decision layer selects an operation while the Booking Engine remains responsible for validating whether that operation is allowed.
+
+---
+
+# Controlled Tool Execution
+
+The tool executor acts as a boundary between AI decisions and deterministic business logic.
+
+```text
+AI Decision
+      ↓
+Business Action
+      ↓
+Tool Executor
+      ↓
+Conversation Context
+      ↓
+BookingCreate
+      ↓
+Booking Engine
+      ↓
+Repositories
+      ↓
+MongoDB
+```
+
+The executor does not bypass the Booking Engine and does not write directly to MongoDB.
+
+For booking creation, it reuses the existing conversation-to-booking flow so that all existing validation and scheduling rules remain enforced.
+
+This establishes the foundation for Phase 8, where additional booking operations will be exposed as explicit AI business tools.
 
 ---
 
@@ -731,7 +1042,7 @@ Create   Return
 Booking  Error
 ```
 
-This keeps validation and execution together at the application layer instead of duplicating booking rules inside API routes or conversation logic.
+This keeps validation and execution together at the application layer instead of duplicating booking rules inside API routes, conversation logic, or AI execution logic.
 
 ---
 
@@ -998,6 +1309,7 @@ Application-level validation additionally protects against:
 - conflicting rescheduling requests
 - missing conversations
 - incomplete booking context
+- unsupported or incomplete AI actions
 
 Booking business HTTP errors are centralized in:
 
@@ -1041,7 +1353,7 @@ python -m pytest -v
 Current result:
 
 ```text
-123 passed
+194 passed
 1 warning
 0 failures
 ```
@@ -1126,9 +1438,25 @@ Conversation
    ├── Conversation-to-booking conversion
    ├── Conversation-to-booking-engine execution
    └── Shared business error mapping
+
+AI Core
+   ├── Intent detection
+   ├── Entity extraction
+   ├── Entity resolution
+   ├── Context preparation
+   ├── Missing-field detection
+   ├── Missing-information handling
+   ├── Resolved entities
+   ├── Existing-context preservation
+   ├── Structured decisions
+   ├── Multi-turn booking continuation
+   ├── Response generation
+   ├── Orchestration
+   ├── Business-action selection
+   └── Controlled tool execution
 ```
 
-The full regression suite is run after booking, scheduling, conversation, and integration changes to detect regressions across existing functionality.
+The full regression suite is run after booking, scheduling, conversation, AI Core, and integration changes to detect regressions across existing functionality.
 
 ---
 
@@ -1148,9 +1476,8 @@ The full regression suite is run after booking, scheduling, conversation, and in
 Planned:
 
 - LLM API
-- intent detection
-- AI business tools
-- tool calling
+- expanded AI business tools
+- LLM tool calling
 - Docker
 - GitHub Actions
 
@@ -1241,7 +1568,7 @@ Repositories
 MongoDB
 ```
 
-The booking engine is now reusable by both REST routes and conversation workflows.
+The booking engine is reusable by both REST routes and conversation workflows.
 
 ---
 
@@ -1294,38 +1621,72 @@ Repositories
 MongoDB
 ```
 
-Final Phase 6 regression:
-
-```text
-123 passed
-1 warning
-0 failures
-```
-
-No LLM was introduced during this phase.
+No external LLM was introduced during this phase.
 
 ---
 
-## Phase 7 — AI Core
+## Phase 7 — AI Core & Controlled Execution
 
-**Next**
+**Completed**
 
-Planned direction:
+Implemented:
 
-- intent detection
-- entity extraction
-- conversation decision logic
-- booking-intent state handling
-- deterministic orchestration around existing conversation context
-- preparation for controlled tool selection
+- [x] Intent detection
+- [x] Entity extraction
+- [x] Entity resolution
+- [x] Context preparation
+- [x] Missing-field detection
+- [x] Missing-information handling
+- [x] Existing-context merging
+- [x] Multi-turn booking-intent handling
+- [x] Structured decision model
+- [x] Decision engine
+- [x] Response generation
+- [x] AI orchestration
+- [x] Controlled business-action selection
+- [x] Tool executor
+- [x] Conversation-to-tool execution
+- [x] Booking creation through the existing Booking Engine
+- [x] AI Core unit and integration tests
+- [x] Full regression testing
 
-The AI core will build on the completed Conversation System rather than replacing it.
+Final Phase 7 direction:
+
+```text
+User Message
+      ↓
+AI Orchestrator
+      ↓
+Intent + Entities
+      ↓
+Entity Resolution
+      ↓
+Conversation Context
+      ↓
+Decision Engine
+      ↓
+ASK_USER / CALL_TOOL / UNKNOWN
+      ↓
+Response Generator / Tool Executor
+      ↓
+Booking Engine
+      ↓
+Repositories
+      ↓
+MongoDB
+```
+
+Phase 7 establishes a deterministic AI decision and execution layer without introducing an external LLM or allowing AI components to bypass business rules.
 
 ---
 
 ## Phase 8 — AI Business Tools
 
-**Planned**
+**Next**
+
+The next phase expands the controlled execution boundary into explicit reusable business tools.
+
+Planned tools:
 
 ```text
 get_services
@@ -1336,7 +1697,23 @@ update_booking
 cancel_booking
 ```
 
-These tools will expose controlled booking operations to the future AI agent.
+Planned direction:
+
+```text
+AI Decision
+      ↓
+Business Tool
+      ↓
+Booking Engine / Application Service
+      ↓
+Validation & Business Rules
+      ↓
+Repositories
+      ↓
+MongoDB
+```
+
+Phase 8 will reuse the existing booking engine and repository-backed application logic rather than duplicating booking rules inside AI tools.
 
 The AI layer will not access MongoDB directly.
 
@@ -1352,6 +1729,7 @@ The AI layer will not access MongoDB directly.
 - prompt design
 - guardrails
 - controlled execution
+- deterministic validation after model decisions
 
 ---
 
@@ -1423,7 +1801,7 @@ python -m pytest -v
 Current expected result:
 
 ```text
-123 passed
+194 passed
 1 warning
 0 failures
 ```
@@ -1434,7 +1812,7 @@ A dependency deprecation warning from the FastAPI/Starlette TestClient stack may
 
 # Current Development Focus
 
-The deterministic booking foundation and persistent Conversation System are complete.
+The deterministic booking foundation, persistent Conversation System, and AI Core are complete.
 
 ```text
 Foundation                         ✓
@@ -1460,15 +1838,24 @@ Booking Context                    ✓
 Conversation ↔ Booking Engine      ✓
 Conversation REST API              ✓
 Shared Error Handling              ✓
-AI Core                            → NEXT
-Agent Tools
+Intent Detection                   ✓
+Entity Extraction                  ✓
+Entity Resolution                  ✓
+Context Preparation                ✓
+Missing Information                ✓
+Decision Engine                    ✓
+Response Generation                ✓
+AI Orchestration                   ✓
+Controlled Tool Execution          ✓
+AI Core                            ✓
+AI Business Tools                  → NEXT
 LLM Integration
 Production Engineering
 ```
 
 The current objective is:
 
-> **Build the AI decision layer on top of the completed deterministic booking and conversation infrastructure without duplicating business logic.**
+> **Expand the controlled AI execution layer into reusable business tools without duplicating booking logic or allowing direct AI access to persistence.**
 
 ---
 
@@ -1481,9 +1868,9 @@ FastAPI
    ↓
 Conversation System
    ↓
-AI Agent
+AI Core
    ↓
-Business Tools
+AI Business Tools
    ↓
 Booking Engine
    ↓
@@ -1494,22 +1881,22 @@ Repositories
 MongoDB
 ```
 
-The AI model will decide:
+The AI layer decides:
 
 ```text
 What operation is needed?
 What information is still missing?
-Which controlled tool should be used?
+Which controlled business action or tool should be used?
 ```
 
-The deterministic backend will decide:
+The deterministic backend decides:
 
 ```text
 Is the operation allowed?
 How should it be executed?
 ```
 
-The database will persist the validated result.
+The database persists only the validated result.
 
 ---
 
@@ -1532,7 +1919,7 @@ Is the conversation context complete enough to request a booking?
 
 These decisions should not depend on probabilistic model output.
 
-The future AI agent will therefore use deterministic backend operations and persistent conversation infrastructure rather than reproducing booking logic inside prompts.
+The AI layer therefore uses deterministic backend operations and persistent conversation infrastructure rather than reproducing booking logic inside prompts.
 
 ---
 
@@ -1547,10 +1934,11 @@ The future AI agent will therefore use deterministic backend operations and pers
 - Conflict-safe booking operations
 - Persistent conversation state
 - Partial booking-context collection
+- Structured AI decisions
+- Controlled business-action execution
 - Shared HTTP error mapping
 - Automated regression testing
 - Framework-independent business logic
-- Controlled AI tool execution
 - No direct AI access to MongoDB
 - No secrets committed to Git
 
@@ -1583,7 +1971,7 @@ Scheduling
 MongoDB
 ```
 
-The same deterministic booking engine and conversation infrastructure can support multiple interfaces without duplicating business rules.
+The same deterministic booking engine, conversation infrastructure, and AI Core can support multiple interfaces without duplicating business rules.
 
 ---
 
@@ -1594,6 +1982,8 @@ The same deterministic booking engine and conversation infrastructure can suppor
 > **Conversation infrastructure should preserve context and state.**
 >
 > **Business logic should decide what is allowed.**
+>
+> **Controlled tools should execute validated operations.**
 >
 > **The database should persist the validated result.**
 
