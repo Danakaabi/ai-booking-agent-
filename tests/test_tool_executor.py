@@ -204,3 +204,63 @@ def test_ai_booking_flow_end_to_end():
         conversations_collection.delete_one(
             {"_id": ObjectId(conversation["id"])}
         )
+
+
+def test_executor_routes_get_services_to_business_tool(monkeypatch):
+    decision = AIDecision(
+        intent=Intent.UNKNOWN,
+        next_action=NextAction.CALL_TOOL,
+        business_action=BusinessAction.GET_SERVICES,
+    )
+
+    expected_services = [
+        {
+            "id": "service-123",
+            "name": "Haircut",
+        }
+    ]
+
+    def fake_get_services():
+        return expected_services
+
+    monkeypatch.setattr(
+        "ai_core.tool_executor.get_services",
+        fake_get_services,
+    )
+
+    result = execute_business_action(
+        decision,
+        conversation_id="conversation-123",
+    )
+
+    assert result == (expected_services, None)
+
+
+def test_executor_routes_get_staff_to_business_tool(monkeypatch):
+    decision = AIDecision(
+        intent=Intent.UNKNOWN,
+        next_action=NextAction.CALL_TOOL,
+        business_action=BusinessAction.GET_STAFF,
+    )
+
+    expected_staff = [
+        {
+            "id": "staff-123",
+            "name": "Sara",
+        }
+    ]
+
+    def fake_get_staff():
+        return expected_staff
+
+    monkeypatch.setattr(
+        "ai_core.tool_executor.get_staff",
+        fake_get_staff,
+    )
+
+    result = execute_business_action(
+        decision,
+        conversation_id="conversation-123",
+    )
+
+    assert result == (expected_staff, None)

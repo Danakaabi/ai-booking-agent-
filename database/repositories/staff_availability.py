@@ -38,29 +38,3 @@ def get_staff_availability(
         record["id"] = str(record.pop("_id"))
 
     return records
-
-
-
-
-[{
-	"resource": "/Users/dana/Desktop/ai-booking-agent/database/repositories/staff_availability.py",
-	"owner": "Pylance",
-	"code": {
-		"value": "reportUndefinedVariable",
-		"target": {
-			"$mid": 1,
-			"path": "/microsoft/pylance-release/blob/main/docs/diagnostics/reportUndefinedVariable.md",
-			"scheme": "https",
-			"authority": "github.com"
-		}
-	},
-	"severity": 4,
-	"message": "\"bookings_collection\" is not defined",
-	"source": "Pylance",
-	"startLineNumber": 49,
-	"startColumn": 9,
-	"endLineNumber": 49,
-	"endColumn": 28,
-	"modelVersionId": 9,
-	"origin": "extHost1"
-}]
