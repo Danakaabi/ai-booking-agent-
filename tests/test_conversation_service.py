@@ -1,13 +1,14 @@
 from bson import ObjectId
 from ai_core.decision import NextAction
 from ai_core.intent import Intent
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 from ai_core.conversation_service import (
     add_message_to_conversation,
     get_conversation_history,
     build_booking_from_context,
     change_conversation_state,
+    execute_available_times_from_conversation,
     execute_booking_from_conversation,
     process_conversation_message,
     update_conversation_booking_context,
@@ -526,6 +527,60 @@ def test_process_conversation_message_creates_unknown_assistant_response():
             {"conversation_id": conversation["id"]}
         )
 
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
+
+
+def test_execute_available_times_from_conversation_reuses_business_tool(
+    monkeypatch,
+):
+    conversation = create_conversation()
+
+    try:
+        update_conversation_booking_context(
+            conversation_id=conversation["id"],
+            context=BookingContext(
+                service_id="service-123",
+                staff_id="staff-123",
+                booking_datetime=datetime(
+                    2026,
+                    8,
+                    24,
+                    10,
+                    0,
+                ),
+            ),
+        )
+
+        expected_slots = [
+            datetime(2026, 8, 24, 9, 0),
+            datetime(2026, 8, 24, 9, 30),
+        ]
+
+        def fake_get_available_times(
+            staff_id: str,
+            service_id: str,
+            target_date: date,
+        ):
+            assert staff_id == "staff-123"
+            assert service_id == "service-123"
+            assert target_date == date(2026, 8, 24)
+            return expected_slots
+
+        monkeypatch.setattr(
+            "ai_core.conversation_service.get_available_times",
+            fake_get_available_times,
+        )
+
+        slots, error = execute_available_times_from_conversation(
+            conversation["id"]
+        )
+
+        assert error is None
+        assert slots == expected_slots
+
+    finally:
         conversations_collection.delete_one(
             {"_id": ObjectId(conversation["id"])}
         )

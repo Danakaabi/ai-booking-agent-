@@ -264,3 +264,39 @@ def test_executor_routes_get_staff_to_business_tool(monkeypatch):
     )
 
     assert result == (expected_staff, None)
+
+
+def test_executor_routes_get_available_times_to_conversation_service(
+    monkeypatch,
+):
+    decision = AIDecision(
+        intent=Intent.UNKNOWN,
+        next_action=NextAction.CALL_TOOL,
+        business_action=BusinessAction.GET_AVAILABLE_TIMES,
+    )
+
+    expected_result = (
+        [
+            "2026-08-24T09:00:00",
+            "2026-08-24T09:30:00",
+        ],
+        None,
+    )
+
+    def fake_execute_available_times_from_conversation(
+        conversation_id: str,
+    ):
+        assert conversation_id == "conversation-123"
+        return expected_result
+
+    monkeypatch.setattr(
+        "ai_core.tool_executor.execute_available_times_from_conversation",
+        fake_execute_available_times_from_conversation,
+    )
+
+    result = execute_business_action(
+        decision,
+        conversation_id="conversation-123",
+    )
+
+    assert result == expected_result

@@ -9,6 +9,7 @@ from api.schemas.conversation import (
 
 
 from ai_core.booking_engine import execute_booking_request
+from ai_core.business_tools import get_available_times
 from ai_core.decision import AIDecision, NextAction
 from ai_core.orchestrator import process_message
 from ai_core.response_generator import generate_response
@@ -135,6 +136,35 @@ def execute_booking_from_conversation(
         return None, "Booking context is incomplete"
 
     return execute_booking_request(booking)
+
+
+
+def execute_available_times_from_conversation(
+    conversation_id: str,
+) -> tuple[list | None, str | None]:
+    conversation = get_conversation_by_id(conversation_id)
+
+    if conversation is None:
+        return None, "Conversation not found"
+
+    context = BookingContext(
+        **conversation["booking_context"]
+    )
+
+    if (
+        context.service_id is None
+        or context.staff_id is None
+        or context.booking_datetime is None
+    ):
+        return None, "Availability context is incomplete"
+
+    slots = get_available_times(
+        staff_id=context.staff_id,
+        service_id=context.service_id,
+        target_date=context.booking_datetime.date(),
+    )
+
+    return slots, None
 
 
 

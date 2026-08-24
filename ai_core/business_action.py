@@ -7,3 +7,4 @@ class BusinessAction(str, Enum):
     CREATE_BOOKING = "create_booking"
     GET_SERVICES = "get_services"
     GET_STAFF = "get_staff"
+    GET_AVAILABLE_TIMES = "get_available_times"
