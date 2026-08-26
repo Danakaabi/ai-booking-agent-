@@ -6,6 +6,14 @@ from ai_core.missing_information import detect_missing_fields
 from api.schemas.conversation import BookingContext
 
 
+BUSINESS_ACTION_BY_INTENT: dict[Intent, BusinessAction] = {
+    Intent.BOOK: BusinessAction.CREATE_BOOKING,
+    Intent.CHECK_AVAILABILITY: BusinessAction.GET_AVAILABLE_TIMES,
+    Intent.GET_SERVICES: BusinessAction.GET_SERVICES,
+    Intent.GET_STAFF: BusinessAction.GET_STAFF,
+}
+
+
 def make_decision(
     intent: Intent,
     context: BookingContext,
@@ -13,7 +21,9 @@ def make_decision(
 ) -> AIDecision:
     """Determine the next AI action for a supported conversation intent."""
 
-    if intent is not Intent.BOOK:
+    business_action = BUSINESS_ACTION_BY_INTENT.get(intent)
+
+    if business_action is None:
         raise ValueError(
             f"Decision logic is not defined for intent: {intent.value}"
         )
@@ -35,7 +45,7 @@ def make_decision(
         missing_fields=missing_fields,
         next_action=next_action,
         business_action=(
-            BusinessAction.CREATE_BOOKING
+            business_action
             if next_action is NextAction.CALL_TOOL
             else None
         ),

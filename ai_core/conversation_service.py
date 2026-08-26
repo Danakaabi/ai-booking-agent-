@@ -204,10 +204,16 @@ def process_conversation_message(
         active_intent=active_intent,
     )
 
-    if decision.intent is Intent.BOOK and active_intent != Intent.BOOK:
+    if (
+        decision.intent in (
+            Intent.BOOK,
+            Intent.CHECK_AVAILABILITY,
+        )
+        and active_intent != decision.intent
+    ):
         update_active_intent(
             conversation_id=conversation_id,
-            intent=Intent.BOOK,
+            intent=decision.intent,
         )
 
     if context_update.model_dump(exclude_none=True):

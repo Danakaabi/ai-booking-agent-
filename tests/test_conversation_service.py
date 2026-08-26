@@ -584,3 +584,55 @@ def test_execute_available_times_from_conversation_reuses_business_tool(
         conversations_collection.delete_one(
             {"_id": ObjectId(conversation["id"])}
         )
+
+
+def test_process_conversation_message_continues_availability_across_messages():
+    conversation = create_conversation()
+
+    try:
+        first_decision = process_conversation_message(
+            conversation_id=conversation["id"],
+            message="check availability",
+        )
+
+        assert first_decision is not None
+        assert first_decision.intent == Intent.CHECK_AVAILABILITY
+        assert first_decision.next_action == NextAction.ASK_USER
+
+        after_first_message = get_conversation_by_id(
+            conversation["id"]
+        )
+
+        assert after_first_message is not None
+        assert (
+            after_first_message["active_intent"]
+            == Intent.CHECK_AVAILABILITY
+        )
+
+        second_decision = process_conversation_message(
+            conversation_id=conversation["id"],
+            message="Haircut",
+        )
+
+        assert second_decision is not None
+        assert second_decision.intent == Intent.CHECK_AVAILABILITY
+        assert second_decision.next_action == NextAction.ASK_USER
+
+        after_second_message = get_conversation_by_id(
+            conversation["id"]
+        )
+
+        assert after_second_message is not None
+        assert (
+            after_second_message["booking_context"]["service_id"]
+            is not None
+        )
+        assert (
+            after_second_message["active_intent"]
+            == Intent.CHECK_AVAILABILITY
+        )
+
+    finally:
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )
