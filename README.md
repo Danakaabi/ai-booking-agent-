@@ -1,4 +1,39 @@
-<p align="center">
+
+نص واحد ملصق (20260826-071419).txt
+مستند
+
+نص واحد ملصق (20260826-071950).txt
+مستند
+ممتاز، كذا Phase 8 مقفلة وظيفيًا:
+209 passed
+1 warning
+0 failed
+والـwarning نفسه قديم من Starlette/httpx وليس من التعديلات الحالية.
+الآن نفّذي بالترتيب:
+
+git status
+إذا ظهرت فقط ملفات Phase 8 التي عدلناها، ارفعيها:
+git add ai_core/missing_information.py \
+        ai_core/decision_engine.py \
+        ai_core/conversation_service.py \
+        tests/test_decision_engine.py \
+        tests/test_conversation_service.py
+ثم:
+git status
+وبعدها commit:
+git commit -m "Complete Phase 8 AI business tool routing"
+ثم الرفع:
+git push origin main
+بعد ما ترفعين، نقدر نبدأ Phase 9 مباشرة.
+
+تم لصق markdown(20260826-074045).md
+الملف
+قم بتحديث الملف واعده كااامل وانتبه لحجم الكود من التضخم واذا في شي مكرر عدله وحافظ على تنسيق الملف 
+
+تم التحليل
+from pathlib import Path
+
+content = r'''<p align="center">
   <img src="docs/assets/ai-booking-agent-banner.png"
        alt="AI Booking Agent"
        width="100%">
@@ -19,8 +54,8 @@
   <img src="https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white" alt="FastAPI">
   <img src="https://img.shields.io/badge/MongoDB-Database-47A248?logo=mongodb&logoColor=white" alt="MongoDB">
   <img src="https://img.shields.io/badge/Pydantic-Validation-E92063" alt="Pydantic">
-  <img src="https://img.shields.io/badge/Pytest-194%20Passing-0A9EDC?logo=pytest&logoColor=white" alt="Tests">
-  <img src="https://img.shields.io/badge/Phase%207-Completed-success" alt="Phase 7">
+  <img src="https://img.shields.io/badge/Pytest-209%20Passing-0A9EDC?logo=pytest&logoColor=white" alt="Tests">
+  <img src="https://img.shields.io/badge/Phase%208-Completed-success" alt="Phase 8">
   <img src="https://img.shields.io/badge/Status-Active%20Development-orange" alt="Status">
 </p>
 
@@ -30,7 +65,7 @@
 
 **AI Booking Agent** is a reusable booking backend designed to evolve into an AI-powered booking agent.
 
-The project is intentionally developed **backend-first** so that booking rules, scheduling, availability, staff assignment, conflict detection, validation, conversation state, context management, AI decision logic, and persistence are reliable before introducing an external LLM.
+The project is intentionally developed **backend-first** so that booking rules, scheduling, availability, staff assignment, conflict detection, validation, conversation state, context management, AI decisions, and controlled tool execution are reliable before introducing an external LLM.
 
 ```text
 User / Client
@@ -46,207 +81,163 @@ Validation & Business Rules
 Repository Layer
       ↓
 MongoDB
-```
+The AI layer interacts with the application through explicit business tools rather than accessing MongoDB directly. This keeps probabilistic reasoning separate from deterministic booking rules and persistence.
+Current Status
+Phase 1 — Foundation: Completed
+Phase 2 — API & MongoDB Foundation: Completed
 
-The AI layer is designed to interact with the system through controlled business actions rather than direct database access.
+Phase 3 — Booking System: Completed
 
-This keeps probabilistic AI reasoning separate from deterministic booking rules, conversation infrastructure, and persistence.
+Phase 4 — Customers, Staff & Availability: Completed
 
----
+Phase 5 — Booking Engine Expansion: Completed
 
-# Current Status
+Phase 6 — Conversation System: Completed
 
-> **Phase 1 — Foundation: Completed**
->
-> **Phase 2 — API & MongoDB Foundation: Completed**
->
-> **Phase 3 — Booking System: Completed**
->
-> **Phase 4 — Customers, Staff & Availability: Completed**
->
-> **Phase 5 — Booking Engine Expansion: Completed**
->
-> **Phase 6 — Conversation System: Completed**
->
-> **Phase 7 — AI Core & Controlled Execution: Completed**
->
-> **Phase 8 — AI Business Tools: Next**
+Phase 7 — AI Core & Controlled Execution: Completed
+
+Phase 8 — AI Business Tools: Completed
+
+Phase 9 — LLM Integration: Next
 
 Current automated test status:
-
-```text
-194 passed
+209 passed
 1 warning
 0 failures
-```
-
-A FastAPI/Starlette TestClient dependency deprecation warning is currently emitted but does not represent a failing test.
-
----
-
-# Implemented Features
-
-## Booking
-
-- [x] Create bookings
-- [x] Retrieve all bookings
-- [x] Retrieve booking by ID
-- [x] Partial booking updates
-- [x] Validated booking updates
-- [x] Booking rescheduling
-- [x] Booking cancellation
-- [x] Booking status lifecycle
-- [x] 404 handling
-- [x] Confirmed-booking filtering
-- [x] Cancelled-slot reuse
-- [x] Conflict-aware booking creation
-- [x] Conflict-aware booking rescheduling
-- [x] Self-conflict exclusion during booking updates
-
-## Booking Engine
-
-- [x] Centralized booking validation
-- [x] Booking creation orchestration
-- [x] Booking update orchestration
-- [x] Booking cancellation orchestration
-- [x] Service validation
-- [x] Business-hours validation
-- [x] Staff validation
-- [x] Service-to-staff validation
-- [x] Staff availability validation
-- [x] Booking conflict validation
-- [x] Staff-aware conflict detection
-- [x] Current-booking exclusion during rescheduling
-- [x] Repository-backed booking execution
-- [x] Shared HTTP error mapping for booking business errors
-
-## Availability & Scheduling
-
-- [x] Business-hours validation
-- [x] Full service-duration validation
-- [x] Booking overlap detection
-- [x] Double-booking prevention
-- [x] Back-to-back booking support
-- [x] Persistent availability configuration
-- [x] Staff-specific working schedules
-- [x] Staff availability validation
-- [x] Staff-specific booking conflicts
-- [x] Available time slot generation
-- [x] Occupied slot exclusion
-- [x] Available slots API
-
-## Customers
-
-- [x] Customer schema
-- [x] Customer validation
-- [x] Customer repository
-- [x] Customer API
-- [x] Active customer filtering
-
-## Staff
-
-- [x] Staff schema
-- [x] Staff validation
-- [x] Staff repository
-- [x] Staff API
-- [x] Service-to-staff relationships
-- [x] Staff lookup by service
-- [x] Staff-specific availability
-
-## Conversation System
-
-- [x] Conversation schema
-- [x] Message schema
-- [x] Message roles: user, assistant, system
-- [x] Conversations MongoDB collection
-- [x] Messages MongoDB collection
-- [x] Conversation repository
-- [x] Message repository
-- [x] Conversation creation
-- [x] Conversation retrieval
-- [x] Message persistence
-- [x] Conversation history
-- [x] Ordered message history
-- [x] Conversation isolation
-- [x] Conversation state
-- [x] Active and completed states
-- [x] Booking context
-- [x] Partial booking-context updates
-- [x] Preservation of previously collected context
-- [x] Conversation service
-- [x] Conversation-to-booking conversion
-- [x] Conversation-to-booking-engine integration
-- [x] Conversation REST API
-- [x] Shared booking business error mapping
-
-## AI Core
-
-- [x] Intent detection
-- [x] Entity extraction
-- [x] Entity resolution
-- [x] Context preparation
-- [x] Existing-context merging
-- [x] Missing-field detection
-- [x] Structured AI decisions
-- [x] Booking-intent continuation across messages
-- [x] Decision engine
-- [x] Response generation
-- [x] Controlled business-action selection
-- [x] Tool executor
-- [x] Conversation-to-tool execution
-- [x] Booking creation through the existing Booking Engine
-- [x] No direct AI access to MongoDB
-
-## Testing
-
-- [x] Schema tests
-- [x] Repository tests
-- [x] API tests
-- [x] Booking lifecycle tests
-- [x] Availability tests
-- [x] Conflict detection tests
-- [x] Customer tests
-- [x] Staff tests
-- [x] Staff availability tests
-- [x] Available slot tests
-- [x] Booking engine validation tests
-- [x] Booking orchestration tests
-- [x] Booking rescheduling tests
-- [x] Rescheduling conflict tests
-- [x] Self-conflict exclusion tests
-- [x] Conversation schema tests
-- [x] Conversation repository tests
-- [x] Message repository tests
-- [x] Conversation service tests
-- [x] Booking context tests
-- [x] Conversation API tests
-- [x] Conversation-to-booking integration tests
-- [x] Intent detection tests
-- [x] Entity extraction tests
-- [x] Entity resolution tests
-- [x] Context preparation tests
-- [x] Missing information tests
-- [x] Resolved entity tests
-- [x] Decision engine tests
-- [x] Orchestrator tests
-- [x] Response generator tests
-- [x] Tool executor tests
-- [x] Shared HTTP error mapping tests
-- [x] Full regression suite
-
+The remaining warning is a FastAPI/Starlette TestClient dependency deprecation warning and does not represent a failing test.
+Implemented Features
+Booking
+ Create bookings
+ Retrieve all bookings
+ Retrieve booking by ID
+ Partial booking updates
+ Validated rescheduling
+ Booking cancellation
+ Booking status lifecycle
+ Confirmed-booking filtering
+ Cancelled-slot reuse
+ Conflict-aware creation and rescheduling
+ Self-conflict exclusion during updates
+ Shared application-level error handling
+Booking Engine
+ Centralized booking validation
+ Service validation
+ Business-hours validation
+ Staff validation
+ Service-to-staff validation
+ Staff availability validation
+ Booking conflict detection
+ Staff-aware conflict detection
+ Booking creation orchestration
+ Booking update / rescheduling orchestration
+ Booking cancellation orchestration
+ Repository-backed execution
+ Shared HTTP error mapping
+Availability & Scheduling
+ Business-hours validation
+ Full service-duration validation
+ Booking overlap detection
+ Double-booking prevention
+ Back-to-back booking support
+ Persistent availability configuration
+ Staff-specific working schedules
+ Staff availability validation
+ Staff-specific booking conflicts
+ Available time-slot generation
+ Occupied-slot exclusion
+ Available-slots API
+Customers
+ Customer schema and validation
+ Customer repository
+ Customer API
+ Active customer filtering
+Staff
+ Staff schema and validation
+ Staff repository
+ Staff API
+ Service-to-staff relationships
+ Staff lookup by service
+ Staff-specific availability
+Conversation System
+ Conversation and message schemas
+ Message roles: user, assistant, system
+ Conversation and message persistence
+ Ordered conversation history
+ Conversation isolation
+ Conversation state
+ Booking context
+ Partial context updates
+ Existing-context preservation
+ Conversation service
+ Conversation-to-booking conversion
+ Conversation-to-booking-engine integration
+ Conversation REST API
+ Active-intent persistence
+ Multi-turn booking continuation
+ Multi-turn availability continuation
+AI Core
+ Intent detection
+ Entity extraction
+ Entity resolution
+ Context preparation
+ Existing-context merging
+ Missing-field detection
+ Structured AI decisions
+ Decision engine
+ Response generation
+ AI orchestration
+ Controlled business-action selection
+ Tool executor
+ Conversation-to-tool execution
+ No direct AI access to MongoDB
+AI Business Tools
+The controlled execution layer currently exposes:
+GET_SERVICES        → get_services()
+GET_STAFF           → get_staff()
+CHECK_AVAILABILITY  → get_available_times()
+BOOK                → create_booking
+The decision layer maps supported intents to explicit business actions:
+BOOK                → CREATE_BOOKING
+CHECK_AVAILABILITY  → GET_AVAILABLE_TIMES
+GET_SERVICES        → GET_SERVICES
+GET_STAFF           → GET_STAFF
+Availability requests require:
+service_id
+staff_id
+booking_datetime
+Booking requests require:
+service_id
+customer_name
+customer_phone
+booking_datetime
+If required information is missing, the system returns ASK_USER. When the required context is complete, it returns CALL_TOOL.
+Testing
+ Schema tests
+ Repository tests
+ API tests
+ Booking lifecycle tests
+ Availability and conflict tests
+ Customer and staff tests
+ Booking engine validation tests
+ Booking orchestration tests
+ Conversation system tests
+ Conversation-to-booking integration tests
+ Intent detection tests
+ Entity extraction and resolution tests
+ Context preparation tests
+ Missing-information tests
+ Decision engine tests
+ Orchestrator tests
+ Response generator tests
+ Business tool tests
+ Tool executor tests
+ Multi-turn availability tests
+ Full regression suite
 Current result:
-
-```text
-194 passed
+209 passed
 1 warning
 0 failures
-```
-
----
-
-# Architecture
-
-```text
+Architecture
 AI Booking Agent
 │
 ├── ai_core/
@@ -255,6 +246,7 @@ AI Booking Agent
 │   ├── available_slots.py
 │   ├── booking_engine.py
 │   ├── business_action.py
+│   ├── business_tools.py
 │   ├── context_preparation.py
 │   ├── conversation_service.py
 │   ├── decision.py
@@ -306,6 +298,7 @@ AI Booking Agent
 │   ├── __init__.py
 │   ├── test_availability.py
 │   ├── test_bookings.py
+│   ├── test_business_tools.py
 │   ├── test_context_preparation.py
 │   ├── test_conversation_repository.py
 │   ├── test_conversation_schemas.py
@@ -331,11 +324,7 @@ AI Booking Agent
 ├── .env.example
 ├── .gitignore
 └── README.md
-```
-
 Current layered flow:
-
-```text
 Client
    ↓
 FastAPI
@@ -351,11 +340,7 @@ Business Rules & Orchestration
 Repository Layer
    ↓
 MongoDB
-```
-
-## AI Conversation Flow
-
-```text
+AI Conversation Flow
 User Message
       ↓
 Intent Detection
@@ -374,84 +359,26 @@ ASK_USER / CALL_TOOL / UNKNOWN
       ↓
 Response Generator / Tool Executor
       ↓
-Booking Engine
+Business Tools / Booking Engine
       ↓
 Repositories
       ↓
 MongoDB
-```
-
-Conversation-to-booking flow:
-
-```text
-User
-   ↓
-Conversation
-   ↓
-Messages + State
-   ↓
-Booking Context
-   ↓
-AI Core
-   ↓
-Structured Decision
-   ↓
-Business Action
-   ↓
-BookingCreate
-   ↓
-Booking Engine
-   ↓
-Validation & Scheduling Rules
-   ↓
-Repositories
-   ↓
-MongoDB
-```
-
-This separation prevents HTTP routing code from becoming tightly coupled to database operations, conversation state, AI decisions, or scheduling rules.
-
----
-
-# API
-
-## Health
-
-```http
+The architecture keeps HTTP routing, conversation state, AI decisions, booking rules, and persistence separated.
+API
+Health
 GET /health
-```
-
 Provides a basic application health check.
-
----
-
-## Services
-
-```http
+Services
 GET /services
-```
-
-Returns available services.
-
-Services provide scheduling information such as service duration, which is used by the booking engine during availability and conflict calculations.
-
----
-
-## Bookings
-
-```http
+Returns active services used by booking and AI workflows.
+Bookings
 POST /bookings
 GET /bookings
 GET /bookings/{booking_id}
 PATCH /bookings/{booking_id}
 PATCH /bookings/{booking_id}/cancel
-```
-
-Booking operations are protected by application-level business rules.
-
-Before a booking is created, the booking engine can validate:
-
-```text
+Booking operations pass through application-level business rules before persistence.
 Booking Request
       ↓
 Service Validation
@@ -466,86 +393,31 @@ Staff Availability
       ↓
 Conflict Detection
       ↓
-Create Booking
-```
-
-Invalid booking requests are rejected before persistence.
-
+Create / Update Booking
 Conflicting reservations return:
-
-```text
 409 Conflict
-```
-
----
-
-## Booking Rescheduling
-
-```http
-PATCH /bookings/{booking_id}
-```
-
-Partial updates are supported through `BookingUpdate`.
-
-Booking updates pass through the booking engine rather than directly modifying the database.
-
-```text
-PATCH Booking
-      ↓
+Booking Rescheduling
+PATCH /bookings/{booking_id} supports partial updates through BookingUpdate.
 Retrieve Existing Booking
       ↓
 Merge Existing + Updated Fields
       ↓
-Create Candidate Booking
+Build Candidate Booking
       ↓
 Validate Candidate
       ↓
 Exclude Current Booking
-from Conflict Detection
       ↓
 Apply Update
-```
-
-This allows a booking to be rescheduled while still enforcing the same scheduling rules used during booking creation.
-
-For example:
-
-```text
-Existing Booking A:
-10:00 → 11:00
-
-Booking B:
-13:00 → 14:00
-
-Attempt to reschedule Booking B:
-10:30 → 11:30
-
-Result:
-409 Conflict
-```
-
-The booking being updated is excluded from its own conflict check.
-
-This prevents a valid update from being incorrectly rejected because the candidate overlaps with the booking's existing stored version.
-
----
-
-## Conversations
-
-```http
+The existing booking is excluded from its own conflict check, preventing false self-conflicts while still protecting against collisions with other reservations.
+Conversations
 POST /conversations
 GET /conversations/{conversation_id}
 POST /conversations/{conversation_id}/messages
 GET /conversations/{conversation_id}/messages
 PATCH /conversations/{conversation_id}/booking-context
 POST /conversations/{conversation_id}/bookings
-```
-
-The conversation API provides persistent conversation infrastructure for the AI Core while remaining independent from an external LLM.
-
-A new conversation starts with:
-
-```text
+A new conversation starts with an active state and an empty booking context:
 state = active
 
 booking_context:
@@ -554,80 +426,17 @@ booking_context:
   customer_phone = None
   booking_datetime = None
   staff_id = None
-```
-
-Messages are stored independently from the conversation document so conversation history can grow without continuously expanding one MongoDB document.
-
-Conceptually:
-
-```text
-Conversation
-    ├── state
-    ├── booking_context
-    └── timestamps
-
-Messages
-    ├── conversation_id
-    ├── role
-    ├── content
-    └── created_at
-```
-
-### Conversation Messages
-
-```http
-POST /conversations/{conversation_id}/messages
-GET /conversations/{conversation_id}/messages
-```
-
-Supported message roles:
-
-```text
-user
-assistant
-system
-```
-
-History is returned from oldest to newest and is isolated by `conversation_id`.
-
-### Booking Context
-
-```http
-PATCH /conversations/{conversation_id}/booking-context
-```
-
-Booking context stores incomplete booking information while it is gathered over multiple messages.
-
-```text
+Messages are stored independently from the conversation document so history can grow without continuously expanding a single MongoDB document.
+Booking Context
+BookingContext stores incomplete information while it is collected over multiple messages:
 BookingContext
 ├── service_id
 ├── customer_name
 ├── customer_phone
 ├── booking_datetime
 └── staff_id
-```
-
-All fields are optional at the conversation stage because the user may provide them incrementally.
-
-Partial updates preserve existing values:
-
-```text
-Update 1:
-service_id = service-123
-
-Update 2:
-customer_name = Dana
-
-Final Context:
-service_id = service-123
-customer_name = Dana
-```
-
-### AI Conversation Processing
-
-User messages are processed through the AI Core.
-
-```text
+All fields are optional at the conversation stage. Partial updates preserve previously collected values.
+AI Conversation Processing
 User Message
       ↓
 Intent Detection
@@ -641,21 +450,7 @@ Context Preparation
 Merge With Existing Context
       ↓
 Decision Engine
-```
-
-The decision engine can determine whether the system should:
-
-```text
-ASK_USER
-CALL_TOOL
-UNKNOWN
-```
-
-For incomplete booking requests, the system identifies missing information and generates a clarification response.
-
-For example:
-
-```text
+For an incomplete request:
 User:
 I want to book Haircut
 
@@ -666,57 +461,11 @@ BOOK
 
       ↓
 
-Service:
-Haircut
-
-      ↓
-
-Missing:
-customer_phone
-booking_datetime
-
-      ↓
-
-Decision:
-ASK_USER
-```
-
-The booking intent can continue across multiple messages:
-
-```text
-Message 1:
-I want to book Haircut
-
-      ↓
-
-Context:
-service_id = Haircut
-
+Missing Information
       ↓
 
 ASK_USER
-
-Message 2:
-0501234567
-
-      ↓
-
-Existing Context + New Entity
-
-      ↓
-
-Context:
-service_id = Haircut
-customer_phone = 0501234567
-
-      ↓
-
-Next Decision
-```
-
-When the required context becomes complete, the decision layer can select a controlled business action instead of accessing persistence directly.
-
-```text
+When the required context becomes complete:
 Complete Context
       ↓
 Decision Engine
@@ -727,22 +476,15 @@ Business Action
       ↓
 Tool Executor
       ↓
-Booking Engine
+Booking Engine / Application Logic
       ↓
 Repositories
       ↓
 MongoDB
-```
-
-### Create Booking from Conversation
-
-```http
+Booking and availability intents can continue across multiple messages through persisted active_intent.
+Create Booking from Conversation
 POST /conversations/{conversation_id}/bookings
-```
-
-A booking is executed only after the required context is complete.
-
-```text
+A booking is executed only after required booking context is complete.
 Conversation
       ↓
 Booking Context
@@ -760,130 +502,16 @@ No        Yes
       Business Rules
             ↓
         MongoDB
-```
-
-Conversation-specific errors are handled by the conversation API, while booking business errors use the shared HTTP error mapper.
-
----
-
-## Customers
-
-Customer creation, retrieval, validation, and active-customer filtering are supported through the customer API and repository layer.
-
-Customer data is kept separate from booking business logic so that customer management can evolve independently.
-
----
-
-## Staff
-
-```http
+Staff
 GET /staff
 GET /staff/{staff_id}
-```
-
-Staff members can be linked to supported services and assigned individual working schedules.
-
-Booking validation can verify:
-
-```text
-Staff Exists
-      ↓
-Staff Supports Service
-      ↓
-Staff Is Working
-      ↓
-Staff Has No Booking Conflict
-```
-
----
-
-## Available Time Slots
-
-```http
+Staff members can be linked to services and assigned individual working schedules.
+Available Time Slots
 GET /staff/{staff_id}/available-slots
-```
-
 Example:
-
-```http
-GET /staff/{staff_id}/available-slots?target_date=2026-08-16&start_hour=9&end_hour=17&duration_minutes=60&interval_minutes=30
-```
-
-Slot generation considers:
-
-- staff working schedules
-- requested duration
-- confirmed staff bookings
-- booking conflicts
-- scheduling boundaries
-
-Example flow:
-
-```text
-Target Date
-     ↓
-Staff Schedule
-     ↓
-Candidate Slots
-     ↓
-Existing Staff Bookings
-     ↓
-Conflict Detection
-     ↓
-Available Slots
-```
-
-Only slots that satisfy the scheduling rules are returned.
-
----
-
-# Booking Engine
-
-The booking engine is the central application layer for booking decisions.
-
-Instead of allowing API routes to independently implement booking rules, reusable orchestration functions coordinate validation and persistence.
-
-Current responsibilities include:
-
-```text
-Booking Engine
-│
-├── Service Resolution
-├── Business-Hours Validation
-├── Staff Validation
-├── Service-to-Staff Validation
-├── Staff Availability
-├── Conflict Detection
-├── Booking Creation Orchestration
-├── Booking Update / Rescheduling Orchestration
-└── Booking Cancellation Orchestration
-```
-
-The current architecture follows:
-
-```text
-API Route / Conversation Service / AI Tool Executor
-                     ↓
-                Booking Engine
-                     ↓
-                Business Rules
-                     ↓
-                Repositories
-                     ↓
-                   MongoDB
-```
-
-This is important for the AI architecture because FastAPI routes, conversation workflows, and controlled AI business actions can reuse the same deterministic booking engine.
-
----
-
-# AI Core
-
-The AI Core introduces a deterministic decision layer between user conversation and the booking engine.
-
-Its responsibility is to interpret conversation input and decide what should happen next without duplicating booking business rules.
-
-```text
+Slot generation considers staff schedules, requested duration, confirmed staff bookings, conflict rules, and scheduling boundaries.
+AI Core & Controlled Execution
+The AI Core is a deterministic decision layer between conversation input and backend business logic.
 AI Core
 │
 ├── Intent Detection
@@ -895,77 +523,41 @@ AI Core
 ├── Response Generation
 ├── Orchestration
 └── Controlled Tool Execution
-```
+Conversational next actions are represented separately from business actions.
+Current next actions:
 
-The AI Core can determine:
-
-```text
-What does the user want?
-      ↓
-What information was provided?
-      ↓
-What information already exists in context?
-      ↓
-What information is still missing?
-      ↓
-Should the system ask the user or execute an action?
-```
-
-Current decision actions include:
-
-```text
 ASK_USER
 UPDATE_CONTEXT
 CALL_TOOL
 COMPLETE
 UNKNOWN
-```
-
-Business actions are represented separately from conversational decisions.
-
-For example:
-
-```text
-Intent:
-BOOK
-
-      ↓
-
-Required Context Complete
-
-      ↓
-
-Next Action:
-CALL_TOOL
-
-      ↓
-
-Business Action:
+Current controlled business actions:
 CREATE_BOOKING
-
+GET_SERVICES
+GET_STAFF
+GET_AVAILABLE_TIMES
+Example:
+Intent: CHECK_AVAILABILITY
       ↓
-
-Tool Executor
-
+Required Context Complete?
       ↓
-
-Booking Engine
-```
-
-This separation ensures that the AI decision layer selects an operation while the Booking Engine remains responsible for validating whether that operation is allowed.
-
----
-
-# Controlled Tool Execution
-
-The tool executor acts as a boundary between AI decisions and deterministic business logic.
-
-```text
-AI Decision
+CALL_TOOL
       ↓
-Business Action
+GET_AVAILABLE_TIMES
       ↓
 Tool Executor
+      ↓
+Business Tool
+      ↓
+Existing Availability Logic
+For booking creation:
+Intent: BOOK
+      ↓
+Required Context Complete?
+      ↓
+CALL_TOOL
+      ↓
+CREATE_BOOKING
       ↓
 Conversation Context
       ↓
@@ -973,242 +565,23 @@ BookingCreate
       ↓
 Booking Engine
       ↓
+Validation
+      ↓
 Repositories
       ↓
 MongoDB
-```
-
-The executor does not bypass the Booking Engine and does not write directly to MongoDB.
-
-For booking creation, it reuses the existing conversation-to-booking flow so that all existing validation and scheduling rules remain enforced.
-
-This establishes the foundation for Phase 8, where additional booking operations will be exposed as explicit AI business tools.
-
----
-
-# Centralized Booking Validation
-
-Booking rules are coordinated through the booking engine before persistence.
-
-Conceptually:
-
-```text
-validate_booking_request()
-        ↓
-Service Exists?
-        ↓
-Inside Business Hours?
-        ↓
-Staff Selected?
-   ┌────┴────┐
-   │         │
-  Yes        No
-   │         │
-   ↓         │
-Staff Exists │
-   ↓         │
-Supports     │
-Service?     │
-   ↓         │
-Available?   │
-   └────┬────┘
-        ↓
-Conflict Check
-        ↓
-Valid / Invalid
-```
-
-Conflict validation applies whether or not a booking contains a `staff_id`.
-
-When a staff member is selected, conflict detection can operate against that staff member's confirmed bookings.
-
----
-
-# Booking Creation Orchestration
-
-Booking creation is coordinated through the booking engine.
-
-```text
-execute_booking_request()
-        ↓
-validate_booking_request()
-        ↓
-┌──────────────────┐
-│ Valid?           │
-├────────┬─────────┤
-│ Yes    │ No      │
-▼        ▼
-Create   Return
-Booking  Error
-```
-
-This keeps validation and execution together at the application layer instead of duplicating booking rules inside API routes, conversation logic, or AI execution logic.
-
----
-
-# Booking Update Orchestration
-
-Booking updates use the same business rules as booking creation.
-
-```text
-execute_booking_update()
-        ↓
-Retrieve Existing Booking
-        ↓
-Merge Update
-        ↓
-Build Candidate Booking
-        ↓
-validate_booking_request()
-        ↓
-Exclude Current Booking ID
-        ↓
-Conflict Detection
-        ↓
-Update Repository
-```
-
-This provides the foundation for safe rescheduling.
-
-The current booking is excluded during conflict detection:
-
-```text
-All Confirmed Bookings
-        ↓
-Remove Current Booking
-        ↓
-Check Candidate Time
-Against Remaining Bookings
-```
-
-This avoids false self-conflicts while still preventing collisions with other reservations.
-
----
-
-# Booking Lifecycle
-
-```text
-Created
-   ↓
-confirmed
-   ↓
-Cancel
-   ↓
-cancelled
-```
-
-Confirmed bookings occupy scheduling slots.
-
-Cancelled bookings are excluded from active conflict detection and release their time slots.
-
-Cancellation preserves the booking record rather than immediately deleting it.
-
-This supports future:
-
-- booking history
-- auditing
-- analytics
-- conversation context
-- AI reasoning
-
----
-
-# Conversation State
-
-Conversation state is intentionally separate from booking status.
-
-```text
-Conversation State
-active
-completed
-```
-
-```text
-Booking Status
-confirmed
-cancelled
-```
-
-The distinction prevents conversation lifecycle concerns from being mixed with booking lifecycle rules.
-
-A conversation begins as:
-
-```text
-active
-```
-
-and can later transition to:
-
-```text
-completed
-```
-
-State changes update the conversation's `updated_at` timestamp.
-
----
-
-# Booking Context
-
-`BookingContext` is temporary conversation memory for booking data that has not yet become a real booking.
-
-It mirrors the relevant fields from `BookingCreate`, but allows them to be optional while information is being collected.
-
-```text
-BookingContext             BookingCreate
---------------             -------------
-service_id       Optional  Required
-customer_name    Optional  Required
-customer_phone   Optional  Required
-booking_datetime Optional  Required
-staff_id         Optional  Optional
-```
-
-`status` is intentionally excluded from `BookingContext` because `confirmed` and `cancelled` belong to an actual booking, not to pre-booking conversation memory.
-
-When all required context fields are available:
-
-```text
-BookingContext
-      ↓
-build_booking_from_context()
-      ↓
-BookingCreate
-      ↓
-execute_booking_request()
-```
-
-The Booking Engine remains responsible for deciding whether the completed request is valid.
-
----
-
-# Scheduling Rules
-
-The system enforces deterministic scheduling rules.
-
+The Tool Executor never bypasses the Booking Engine or repositories and never grants the AI direct database access.
+Core Booking Rules
+The system enforces deterministic rules before persistence.
+Scheduling
 Example business hours:
-
-```text
 09:00 → 17:00
-```
-
 For a 60-minute service:
-
-```text
 16:00 → 17:00   ✓
 16:30 → 17:30   ✗
-```
-
 The full service duration must fit inside the configured availability window.
-
----
-
-# Conflict Detection
-
-Conflict detection operates on booking time intervals rather than only comparing exact start times.
-
-Example:
-
-```text
+Conflict Detection
+Conflict detection uses time intervals rather than exact start-time equality.
 Existing:
 10:00 → 11:00
 
@@ -1217,24 +590,9 @@ Requested:
 
 Result:
 CONFLICT
-```
-
-The engine detects:
-
-- partial overlap
-- booking contained inside another booking
-- booking containing another booking
-- identical booking times
-
-Conflicting booking requests are rejected before persistence.
-
----
-
-# Back-to-Back Bookings
-
-Adjacent reservations are allowed when their time intervals do not overlap.
-
-```text
+The engine detects partial overlap, contained intervals, containing intervals, and identical times.
+Back-to-Back Bookings
+Adjacent reservations are allowed:
 Booking A:
 10:00 → 11:00
 
@@ -1243,85 +601,61 @@ Booking B:
 
 Result:
 No Conflict
-```
-
-This allows working time to be used efficiently without incorrectly treating adjacent reservations as overlapping.
-
----
-
-# Staff-Aware Scheduling
-
-Bookings may optionally reference a staff member.
-
-When a staff member is selected, the engine can validate:
-
-```text
-Requested Service
+Staff-Aware Scheduling
+When a staff member is selected, the engine validates:
+Staff Exists
       ↓
-Staff Member
+Supports Service
       ↓
-Supports Service?
+Is Working
       ↓
-Working at Requested Time?
-      ↓
-Existing Staff Bookings
-      ↓
-Conflict Detection
-      ↓
-Booking Decision
-```
+Has No Conflicting Booking
+Booking Lifecycle
+Created
+   ↓
+confirmed
+   ↓
+Cancel
+   ↓
+cancelled
+Confirmed bookings occupy scheduling slots. Cancelled bookings release their slots while preserving booking history.
+Conversation State vs Booking Status
+Conversation state:
+active
+completed
+Booking status:
+confirmed
+cancelled
+These lifecycles remain separate to avoid mixing conversation concerns with booking-domain rules.
+Validation & Error Handling
+Input validation is handled with Pydantic.
+Schema-level validation covers:
 
-This prevents assigning a booking to a staff member who:
-
-- does not exist
-- does not provide the requested service
-- is outside their working schedule
-- already has a conflicting confirmed booking
-
----
-
-# Validation & Error Handling
-
-Input validation is handled using **Pydantic**.
-
-Current schema-level validation includes:
-
-- required service ID
-- customer name length
-- customer phone length
-- datetime parsing
-- controlled booking status values
-- controlled day-of-week values
-- valid availability time ranges
-- controlled conversation message roles
-- message content length
-- partial BookingContext validation
-
-Application-level validation additionally protects against:
-
-- missing services
-- booking outside business hours
-- booking beyond closing time
-- missing staff
-- unsupported staff-service combinations
-- unavailable staff
-- overlapping confirmed reservations
-- conflicting rescheduling requests
-- missing conversations
-- incomplete booking context
-- unsupported or incomplete AI actions
-
-Booking business HTTP errors are centralized in:
-
-```text
+required and typed identifiers
+customer name and phone constraints
+datetime parsing
+controlled booking status values
+controlled day-of-week values
+valid availability time ranges
+controlled message roles
+message content validation
+partial BookingContext validation
+Application-level validation protects against:
+missing services
+bookings outside business hours
+bookings extending beyond closing time
+missing staff
+unsupported staff-service combinations
+unavailable staff
+overlapping confirmed reservations
+conflicting rescheduling
+missing conversations
+incomplete booking context
+incomplete availability context
+unsupported AI actions
+Booking-related HTTP errors are centralized in:
 api/http_errors.py
-```
-
-This keeps HTTP semantics consistent across both booking and conversation APIs.
-
 Examples:
-
-```text
 Service not found
 → 404 Not Found
 
@@ -1336,541 +670,225 @@ Booking context is incomplete
 
 Conversation not found
 → 404 Not Found
-```
+Testing
+The project uses Pytest and FastAPI testing utilities.
+Run the full suite:
 
----
-
-# Testing
-
-The project uses **Pytest** and FastAPI testing utilities.
-
-Run the complete test suite:
-
-```bash
 python -m pytest -v
-```
-
 Current result:
-
-```text
-194 passed
+209 passed
 1 warning
 0 failures
-```
+Testing covers:
+API & Schemas
+├── Health
+├── Services
+├── Bookings
+├── Customers
+├── Staff
+└── Conversations
 
-Current automated testing covers:
+Booking Domain
+├── Validation
+├── Conflict Detection
+├── Creation
+├── Rescheduling
+├── Cancellation
+├── Staff Availability
+└── Available Slots
 
-```text
-Health
-   └── Application health
-
-Services
-   ├── Retrieve services
-   ├── Retrieve service by ID
-   └── Active service mapping
-
-Bookings
-   ├── Create
-   ├── Retrieve all
-   ├── Retrieve by ID
-   ├── Update
-   ├── Cancel
-   ├── Not-found behavior
-   ├── Confirmed booking filtering
-   ├── Conflict rejection
-   ├── Cancelled slot reuse
-   ├── Business-hours validation
-   ├── Staff-specific conflict lookup
-   ├── Centralized request validation
-   ├── Booking execution
-   ├── Valid rescheduling
-   ├── Conflicting rescheduling rejection
-   └── Self-conflict exclusion
-
-Customers
-   ├── Schema validation
-   ├── Repository operations
-   ├── API operations
-   └── Active customer filtering
-
-Staff
-   ├── Schema validation
-   ├── Repository operations
-   ├── API operations
-   ├── Service relationships
-   └── Service-based lookup
-
-Staff Availability
-   ├── Working schedules
-   ├── Unscheduled days
-   ├── Availability validation
-   ├── Slot generation
-   ├── Occupied slot exclusion
-   └── Available slots API
-
-Availability
-   ├── Opening-time rules
-   ├── Closing-time rules
-   ├── Full-duration validation
-   ├── Overlap detection
-   ├── Back-to-back bookings
-   ├── Contained intervals
-   ├── Identical intervals
-   └── Schema validation
-
-Conversation
-   ├── Conversation schema
-   ├── Message schema
-   ├── Message-role validation
-   ├── Conversation creation
-   ├── Conversation retrieval
-   ├── Conversation state
-   ├── BookingContext validation
-   ├── Partial context updates
-   ├── Context preservation
-   ├── Message persistence
-   ├── Ordered history
-   ├── Conversation isolation
-   ├── Conversation service
-   ├── Conversation API
-   ├── Missing-conversation behavior
-   ├── Incomplete-context behavior
-   ├── Conversation-to-booking conversion
-   ├── Conversation-to-booking-engine execution
-   └── Shared business error mapping
+Conversation System
+├── Persistence
+├── History
+├── State
+├── Booking Context
+├── Context Preservation
+├── Booking Execution
+├── Active Intent
+└── Multi-Turn Continuation
 
 AI Core
-   ├── Intent detection
-   ├── Entity extraction
-   ├── Entity resolution
-   ├── Context preparation
-   ├── Missing-field detection
-   ├── Missing-information handling
-   ├── Resolved entities
-   ├── Existing-context preservation
-   ├── Structured decisions
-   ├── Multi-turn booking continuation
-   ├── Response generation
-   ├── Orchestration
-   ├── Business-action selection
-   └── Controlled tool execution
-```
+├── Intent Detection
+├── Entity Extraction
+├── Entity Resolution
+├── Context Preparation
+├── Missing Information
+├── Decision Engine
+├── Orchestration
+├── Response Generation
+├── Business Tools
+└── Tool Execution
 
-The full regression suite is run after booking, scheduling, conversation, AI Core, and integration changes to detect regressions across existing functionality.
-
----
-
-# Technology Stack
-
-| Technology | Purpose |
-|---|---|
-| Python 3.13 | Core language |
-| FastAPI | REST API |
-| MongoDB | NoSQL database |
-| PyMongo | MongoDB driver |
-| Pydantic | Validation |
-| Pytest | Automated testing |
-| Uvicorn | ASGI development server |
-| Git / GitHub | Version control |
-
+Integration
+├── Conversation → Booking Engine
+├── AI Decision → Business Tool
+└── Full Regression Suite
+The full regression suite is run after booking, scheduling, conversation, AI Core, and integration changes.
+Technology Stack
+Technology	Purpose
+Python 3.13	Core language
+FastAPI	REST API
+MongoDB	NoSQL database
+PyMongo	MongoDB driver
+Pydantic	Validation
+Pytest	Automated testing
+Uvicorn	ASGI development server
+Git / GitHub	Version control
 Planned:
-
-- LLM API
-- expanded AI business tools
-- LLM tool calling
-- Docker
-- GitHub Actions
-
----
-
-# Development Roadmap
-
-## Phase 1 — Foundation
-
-**Completed**
-
+LLM API
+structured LLM tool calling
+guardrails
+Docker
+GitHub Actions
+logging and deployment preparation
+optional React dashboard
+Development Roadmap
+Phase 1 — Foundation
+Completed
 Repository structure, Git configuration, project scope, and domain documentation.
 
----
-
-## Phase 2 — API & MongoDB Foundation
-
-**Completed**
-
+Phase 2 — API & MongoDB Foundation
+Completed
 FastAPI, MongoDB, PyMongo, repositories, schemas, and initial automated tests.
 
----
+Phase 3 — Booking System
+Completed
+Booking CRUD, lifecycle management, validation, cancellation, persistence, and API testing.
 
-## Phase 3 — Booking System
+Phase 4 — Customers, Staff & Availability
+Completed
+Customer and staff management, service relationships, availability, staff schedules, conflicts, slot generation, APIs, and regression tests.
 
-**Completed**
+Phase 5 — Booking Engine Expansion
+Completed
+Centralized booking validation and orchestration for creation, updates, rescheduling, cancellation, staff-aware scheduling, conflicts, and shared HTTP error mapping.
 
-Booking CRUD, lifecycle management, validation, cancellation, persistence, and automated API testing.
+Phase 6 — Conversation System
+Completed
+Persistent conversations, messages, history, state, BookingContext, partial updates, conversation services, REST APIs, and booking-engine integration.
 
----
+Phase 7 — AI Core & Controlled Execution
+Completed
+Intent detection, entity extraction and resolution, context preparation, missing-information detection, structured decisions, orchestration, response generation, business-action selection, and controlled execution.
 
-## Phase 4 — Customers, Staff & Availability
+Phase 8 — AI Business Tools
+Completed
+Implemented controlled reusable tools and decision routing for:
 
-**Completed**
-
-Delivered:
-
-- customer management
-- staff management
-- service-to-staff relationships
-- business availability
-- staff working schedules
-- staff availability
-- conflict prevention
-- staff-specific booking lookup
-- available slot generation
-- available slots API
-- regression testing
-
----
-
-## Phase 5 — Booking Engine Expansion
-
-**Completed**
-
-Implemented:
-
-- [x] Centralized booking validation
-- [x] Service validation
-- [x] Business-hours validation
-- [x] Staff-aware booking decisions
-- [x] Service-to-staff validation
-- [x] Staff availability validation
-- [x] Centralized conflict validation
-- [x] Booking creation orchestration
-- [x] Booking update orchestration
-- [x] Booking cancellation orchestration
-- [x] Validated rescheduling
-- [x] Current-booking exclusion during rescheduling
-- [x] Conflict-aware booking updates
-- [x] Reusable booking operations
-- [x] Centralized HTTP error mapping
-- [x] Regression testing
-
-Final Phase 5 direction:
-
-```text
-API
- ↓
-Booking Engine
- ↓
-Validation & Orchestration
- ↓
-Business Rules
- ↓
-Repositories
- ↓
-MongoDB
-```
-
-The booking engine is reusable by both REST routes and conversation workflows.
-
----
-
-## Phase 6 — Conversation System
-
-**Completed**
-
-Implemented:
-
-- [x] Conversation model/schema
-- [x] Message model/schema
-- [x] Conversations collection
-- [x] Messages collection
-- [x] Conversation repository
-- [x] Message repository
-- [x] Create conversation
-- [x] Get conversation
-- [x] Store user messages
-- [x] Store assistant/system messages
-- [x] Retrieve conversation history
-- [x] Conversation state
-- [x] Booking context
-- [x] Partial context updates
-- [x] Conversation service
-- [x] Conversation-to-booking conversion
-- [x] Booking Engine integration
-- [x] Conversation REST API
-- [x] Shared booking HTTP error mapping
-- [x] Validation and error handling
-- [x] Unit and integration testing
-- [x] Full regression testing
-
-Final Phase 6 flow:
-
-```text
-User
- ↓
-Conversation API
- ↓
-Conversation Service
- ↓
-Messages + State + Booking Context
- ↓
-BookingCreate
- ↓
-Booking Engine
- ↓
-Repositories
- ↓
-MongoDB
-```
-
-No external LLM was introduced during this phase.
-
----
-
-## Phase 7 — AI Core & Controlled Execution
-
-**Completed**
-
-Implemented:
-
-- [x] Intent detection
-- [x] Entity extraction
-- [x] Entity resolution
-- [x] Context preparation
-- [x] Missing-field detection
-- [x] Missing-information handling
-- [x] Existing-context merging
-- [x] Multi-turn booking-intent handling
-- [x] Structured decision model
-- [x] Decision engine
-- [x] Response generation
-- [x] AI orchestration
-- [x] Controlled business-action selection
-- [x] Tool executor
-- [x] Conversation-to-tool execution
-- [x] Booking creation through the existing Booking Engine
-- [x] AI Core unit and integration tests
-- [x] Full regression testing
-
-Final Phase 7 direction:
-
-```text
-User Message
-      ↓
-AI Orchestrator
-      ↓
-Intent + Entities
-      ↓
-Entity Resolution
-      ↓
-Conversation Context
-      ↓
-Decision Engine
-      ↓
-ASK_USER / CALL_TOOL / UNKNOWN
-      ↓
-Response Generator / Tool Executor
-      ↓
-Booking Engine
-      ↓
-Repositories
-      ↓
-MongoDB
-```
-
-Phase 7 establishes a deterministic AI decision and execution layer without introducing an external LLM or allowing AI components to bypass business rules.
-
----
-
-## Phase 8 — AI Business Tools
-
-**Next**
-
-The next phase expands the controlled execution boundary into explicit reusable business tools.
-
-Planned tools:
-
-```text
 get_services
 get_staff
 get_available_times
 create_booking
-update_booking
-cancel_booking
-```
-
-Planned direction:
-
-```text
-AI Decision
+Also implemented:
+intent-to-business-action routing
+context requirements per supported workflow
+controlled execution through existing backend logic
+availability continuation across multiple messages
+business-tool and decision-engine regression tests
+full regression validation
+Final Phase 8 direction:
+User Message
       ↓
-Business Tool
+AI Core
       ↓
-Booking Engine / Application Service
+Decision Engine
+      ↓
+Business Action
+      ↓
+Tool Executor
+      ↓
+Business Tool / Booking Engine
       ↓
 Validation & Business Rules
       ↓
 Repositories
       ↓
 MongoDB
-```
+No AI component writes directly to MongoDB.
+Phase 9 — LLM Integration
+Next
+Planned:
 
-Phase 8 will reuse the existing booking engine and repository-backed application logic rather than duplicating booking rules inside AI tools.
-
-The AI layer will not access MongoDB directly.
-
----
-
-## Phase 9 — LLM Integration
-
-**Planned**
-
-- LLM API
-- tool calling
-- structured outputs
-- prompt design
-- guardrails
-- controlled execution
-- deterministic validation after model decisions
-
----
-
-## Phase 10 — Production Engineering
-
-**Planned**
-
-- Docker
-- GitHub Actions
-- CI
-- security validation
-- logging
-- deployment preparation
-
----
-
-# Local Development
-
-## Clone
-
-```bash
+LLM API integration
+structured outputs
+controlled tool calling
+prompt design
+guardrails
+deterministic backend validation after model decisions
+fallback behavior for invalid or unsupported model outputs
+tests around the LLM boundary
+The LLM will interpret user language and request approved tools, while deterministic application logic remains responsible for validation and execution.
+Phase 10 — Production Engineering
+Planned
+Docker
+GitHub Actions
+CI
+security validation
+logging
+deployment preparation
+A React dashboard may be added later as a presentation layer without changing backend business rules.
+Local Development
+Clone
 git clone https://github.com/Danakaabi/ai-booking-agent-.git
 cd ai-booking-agent
-```
-
-## Virtual Environment
-
-```bash
+Virtual Environment
 python -m venv .venv
 source .venv/bin/activate
-```
-
-## MongoDB
-
+MongoDB
 Verify MongoDB:
-
-```bash
 mongosh --eval 'db.runCommand({ ping: 1 })'
-```
-
 Expected:
-
-```text
 { ok: 1 }
-```
+MongoDB must be running before repository and integration tests.
+If the Homebrew service is unavailable, MongoDB can be started manually with the configured local mongod setup before running tests.
 
-MongoDB must be running before executing tests that depend on repository persistence.
-
-If MongoDB is not running as a Homebrew service, it can be started manually using the configured `mongod.conf` before running repository and integration tests.
-
-## Run API
-
-```bash
+Run API
 uvicorn api.main:app --reload
-```
-
 Swagger:
-
-```text
 http://127.0.0.1:8000/docs
-```
-
-## Run Tests
-
-```bash
+Run Tests
 python -m pytest -v
-```
-
 Current expected result:
-
-```text
-194 passed
+209 passed
 1 warning
 0 failures
-```
-
-A dependency deprecation warning from the FastAPI/Starlette TestClient stack may appear and does not currently represent a failing test.
-
----
-
-# Current Development Focus
-
-The deterministic booking foundation, persistent Conversation System, and AI Core are complete.
-
-```text
+Current Development Focus
 Foundation                         ✓
 FastAPI + MongoDB                  ✓
 Booking System                     ✓
-Availability                       ✓
-Conflict Prevention                ✓
-Customers                          ✓
-Staff                              ✓
-Staff Scheduling                   ✓
-Available Slots                    ✓
-Centralized Booking Validation     ✓
-Booking Creation Orchestration     ✓
-Validated Rescheduling             ✓
-Booking Update Orchestration       ✓
-Booking Cancellation Orchestration ✓
-Booking Engine Expansion           ✓
-Conversation Schemas               ✓
-Conversation Persistence           ✓
-Message History                    ✓
-Conversation State                 ✓
-Booking Context                    ✓
-Conversation ↔ Booking Engine      ✓
-Conversation REST API              ✓
-Shared Error Handling              ✓
+Availability & Scheduling          ✓
+Customers & Staff                  ✓
+Booking Engine                     ✓
+Conversation System                ✓
 Intent Detection                   ✓
-Entity Extraction                  ✓
-Entity Resolution                  ✓
+Entity Extraction & Resolution     ✓
 Context Preparation                ✓
 Missing Information                ✓
 Decision Engine                    ✓
 Response Generation                ✓
 AI Orchestration                   ✓
 Controlled Tool Execution          ✓
-AI Core                            ✓
-AI Business Tools                  → NEXT
-LLM Integration
+AI Business Tools                  ✓
+Multi-Turn Availability            ✓
+Full Regression                    ✓
+
+LLM Integration                    → NEXT
 Production Engineering
-```
-
+Dashboard / UI                     → LATER
 The current objective is:
-
-> **Expand the controlled AI execution layer into reusable business tools without duplicating booking logic or allowing direct AI access to persistence.**
-
----
-
-# Target AI Architecture
-
-```text
+Integrate an LLM at a controlled boundary while preserving deterministic backend validation and explicit tool execution.
+Target AI Architecture
 Client
    ↓
 FastAPI
    ↓
 Conversation System
    ↓
+LLM Boundary
+   ↓
 AI Core
    ↓
-AI Business Tools
+Controlled Business Tools
    ↓
 Booking Engine
    ↓
@@ -1879,117 +897,1142 @@ Validation & Scheduling Rules
 Repositories
    ↓
 MongoDB
-```
-
 The AI layer decides:
-
-```text
-What operation is needed?
+What does the user mean?
+Which approved operation is needed?
 What information is still missing?
-Which controlled business action or tool should be used?
-```
-
+Which controlled tool should be requested?
 The deterministic backend decides:
-
-```text
 Is the operation allowed?
+Is the context complete?
+Does it satisfy booking rules?
 How should it be executed?
-```
-
-The database persists only the validated result.
-
----
-
-# Why Backend-First?
-
+The database persists only validated results.
+Why Backend-First?
 The project deliberately does not begin with an LLM.
+A booking agent must reliably answer questions such as:
 
-A booking agent must reliably understand and enforce rules such as:
-
-```text
 Does the service exist?
-Does the staff member provide the service?
+Does the staff member provide it?
 Is the business open?
 Is the staff member working?
 Does the full service duration fit?
 Does another confirmed booking overlap?
 Can this booking be safely rescheduled?
-Is the conversation context complete enough to request a booking?
-```
-
+Is the conversation context complete?
 These decisions should not depend on probabilistic model output.
+The LLM can therefore be added as an interpretation layer without becoming the authority for booking rules or persistence.
 
-The AI layer therefore uses deterministic backend operations and persistent conversation infrastructure rather than reproducing booking logic inside prompts.
-
----
-
-# Engineering Principles
-
-- Separation of concerns
-- Repository pattern
-- Centralized booking orchestration
-- Dedicated conversation service
-- Validation at application boundaries
-- Deterministic scheduling
-- Conflict-safe booking operations
-- Persistent conversation state
-- Partial booking-context collection
-- Structured AI decisions
-- Controlled business-action execution
-- Shared HTTP error mapping
-- Automated regression testing
-- Framework-independent business logic
-- No direct AI access to MongoDB
-- No secrets committed to Git
-
----
-
-# Long-Term Vision
-
+Engineering Principles
+Separation of concerns
+Repository pattern
+Centralized booking orchestration
+Dedicated conversation service
+Validation at application boundaries
+Deterministic scheduling
+Conflict-safe booking operations
+Persistent conversation state
+Partial booking-context collection
+Structured AI decisions
+Explicit business-action routing
+Controlled tool execution
+Shared HTTP error mapping
+Automated regression testing
+Framework-independent business logic
+No direct AI access to MongoDB
+No secrets committed to Git
+Long-Term Vision
 The project is intended to evolve into a reusable AI booking agent for domains such as:
+salons
+clinics
+healthcare scheduling
+events
+professional services
+appointment-based businesses
+Web / Mobile / Chat / Dashboard
+              ↓
+      Conversation / AI Layer
+              ↓
+        Business Tools
+              ↓
+        Booking Engine
+              ↓
+          Scheduling
+              ↓
+           MongoDB
+The same deterministic booking engine, conversation infrastructure, AI Core, and controlled tools can support multiple interfaces without duplicating business rules.
+Project Philosophy
+AI should interpret and reason about the request.
+Conversation infrastructure should preserve context and state.
 
-- salons
-- clinics
-- healthcare scheduling
-- events
-- professional services
-- appointment-based businesses
+Business logic should decide what is allowed.
 
-```text
-Web
-Mobile
-Chat
+Controlled tools should execute approved operations.
+
+The database should persist only validated results.
+
+<p align="center"> <strong>AI Booking Agent</strong><br> Backend Engineering • Booking Systems • Scheduling • Conversation Systems • AI Agents • System Design </p> '''
+out = Path("/mnt/data/README_updated_phase8.md")
+out.write_text(content, encoding="utf-8")
+print(f"Created: {out}")
+print(f"Characters: {len(content):,}")
+print(f"Lines: {len(content.splitlines()):,}")
+STDOUT/STDERR
+Created: /mnt/data/README_updated_phase8.md
+Characters: 26,121
+Lines: 1,323
+تم تحديث الملف كاملًا مع الحفاظ على أسلوبه، لكن قللت التكرار والتضخم بشكل واضح. حدّثت حالة المشروع إلى Phase 8 Completed وPhase 9 Next، وحدثت الاختبارات إلى 209 passed, 1 warning, 0 failures، وأضافت business_tools.py وtest_business_tools.py في المعمارية، وحدثت مسارات GET_SERVICES / GET_STAFF / GET_AVAILABLE_TIMES / CREATE_BOOKING واستمرار CHECK_AVAILABILITY عبر عدة رسائل. كما دمجت الأقسام المتكررة بدل تكرار نفس شرح Booking Engine وConversation Flow أكثر من مرة. اعتمدت على الملف الذي أرسلته كأساس.
+النسخة الأصلية كانت حوالي 41,815 حرفًا، والنسخة المنقحة أصبحت حوالي 26,121 حرفًا بدون حذف جوهر المشروع، أي خفضنا التضخم بحوالي 37%.
+
+تحميل README المحدّث كاملًا 
+
+README_updated_phase8.md
+مستند
+
+اجعله قابل للنسخ واللصق
+أكيد. هذه النسخة نفسها بصيغة Markdown خام قابلة للنسخ واللصق مباشرة في README.md بدون العلامات المهروبة مثل \< و\_.
+الملف الذي جهزته لك بالفعل بهذه الصيغة، افتحيه ثم Select All → Copy:
+
+فتح README كامل قابل للنسخ واللصق
+
+وبعد نسخه، من داخل المشروع:
+
+nano README.md
+ثم الصقي المحتوى كاملًا واحفظي بـ:
+Control + O
+Enter
+Control + X
+وبعدها نقدر نراجع git diff README.md قبل الرفع للتأكد أن التنسيق في GitHub سليم.
+
+README_updated_phase8.md
+مستند
+
+
+
+
+
+
+
+المكتبة
+/
+تطوير Github
+/
+README_updated_phase8.md
+
+
+<p align="center"> <img src="docs/assets/ai-booking-agent-banner.png" alt="AI Booking Agent" width="100%"> </p>
+<h1 align="center">AI Booking Agent</h1>
+
+<p align="center"> <strong>Backend-first intelligent booking system evolving into a reusable AI agent.</strong> </p>
+
+<p align="center"> Built with FastAPI, MongoDB, PyMongo, Pydantic and Pytest. </p>
+
+<p align="center"> <img src="https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white" alt="Python"> <img src="https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white" alt="FastAPI"> <img src="https://img.shields.io/badge/MongoDB-Database-47A248?logo=mongodb&logoColor=white" alt="MongoDB"> <img src="https://img.shields.io/badge/Pydantic-Validation-E92063" alt="Pydantic"> <img src="https://img.shields.io/badge/Pytest-209%20Passing-0A9EDC?logo=pytest&logoColor=white" alt="Tests"> <img src="https://img.shields.io/badge/Phase%208-Completed-success" alt="Phase 8"> <img src="https://img.shields.io/badge/Status-Active%20Development-orange" alt="Status"> </p>
+
+Overview
+AI Booking Agent is a reusable booking backend designed to evolve into an AI-powered booking agent.
+The project is intentionally developed backend-first so that booking rules, scheduling, availability, staff assignment, conflict detection, validation, conversation state, context management, AI decisions, and controlled tool execution are reliable before introducing an external LLM.
+
+User / Client
+      ↓
+FastAPI
+      ↓
+Conversation API / Booking API
+      ↓
+Conversation Service / AI Core / Booking Engine
+      ↓
+Validation & Business Rules
+      ↓
+Repository Layer
+      ↓
+MongoDB
+The AI layer interacts with the application through explicit business tools rather than accessing MongoDB directly. This keeps probabilistic reasoning separate from deterministic booking rules and persistence.
+Current Status
+Phase 1 — Foundation: Completed
+Phase 2 — API & MongoDB Foundation: Completed
+
+Phase 3 — Booking System: Completed
+
+Phase 4 — Customers, Staff & Availability: Completed
+
+Phase 5 — Booking Engine Expansion: Completed
+
+Phase 6 — Conversation System: Completed
+
+Phase 7 — AI Core & Controlled Execution: Completed
+
+Phase 8 — AI Business Tools: Completed
+
+Phase 9 — LLM Integration: Next
+
+Current automated test status:
+209 passed
+1 warning
+0 failures
+The remaining warning is a FastAPI/Starlette TestClient dependency deprecation warning and does not represent a failing test.
+Implemented Features
+Booking
+
+Create bookings
+
+Retrieve all bookings
+
+Retrieve booking by ID
+
+Partial booking updates
+
+Validated rescheduling
+
+Booking cancellation
+
+Booking status lifecycle
+
+Confirmed-booking filtering
+
+Cancelled-slot reuse
+
+Conflict-aware creation and rescheduling
+
+Self-conflict exclusion during updates
+
+Shared application-level error handling
+Booking Engine
+
+Centralized booking validation
+
+Service validation
+
+Business-hours validation
+
+Staff validation
+
+Service-to-staff validation
+
+Staff availability validation
+
+Booking conflict detection
+
+Staff-aware conflict detection
+
+Booking creation orchestration
+
+Booking update / rescheduling orchestration
+
+Booking cancellation orchestration
+
+Repository-backed execution
+
+Shared HTTP error mapping
+Availability & Scheduling
+
+Business-hours validation
+
+Full service-duration validation
+
+Booking overlap detection
+
+Double-booking prevention
+
+Back-to-back booking support
+
+Persistent availability configuration
+
+Staff-specific working schedules
+
+Staff availability validation
+
+Staff-specific booking conflicts
+
+Available time-slot generation
+
+Occupied-slot exclusion
+
+Available-slots API
+Customers
+
+Customer schema and validation
+
+Customer repository
+
+Customer API
+
+Active customer filtering
+Staff
+
+Staff schema and validation
+
+Staff repository
+
+Staff API
+
+Service-to-staff relationships
+
+Staff lookup by service
+
+Staff-specific availability
+Conversation System
+
+Conversation and message schemas
+
+Message roles: user, assistant, system
+
+Conversation and message persistence
+
+Ordered conversation history
+
+Conversation isolation
+
+Conversation state
+
+Booking context
+
+Partial context updates
+
+Existing-context preservation
+
+Conversation service
+
+Conversation-to-booking conversion
+
+Conversation-to-booking-engine integration
+
+Conversation REST API
+
+Active-intent persistence
+
+Multi-turn booking continuation
+
+Multi-turn availability continuation
+AI Core
+
+Intent detection
+
+Entity extraction
+
+Entity resolution
+
+Context preparation
+
+Existing-context merging
+
+Missing-field detection
+
+Structured AI decisions
+
+Decision engine
+
+Response generation
+
+AI orchestration
+
+Controlled business-action selection
+
+Tool executor
+
+Conversation-to-tool execution
+
+No direct AI access to MongoDB
+AI Business Tools
+The controlled execution layer currently exposes:
+GET_SERVICES        → get_services()
+GET_STAFF           → get_staff()
+CHECK_AVAILABILITY  → get_available_times()
+BOOK                → create_booking
+The decision layer maps supported intents to explicit business actions:
+BOOK                → CREATE_BOOKING
+CHECK_AVAILABILITY  → GET_AVAILABLE_TIMES
+GET_SERVICES        → GET_SERVICES
+GET_STAFF           → GET_STAFF
+Availability requests require:
+service_id
+staff_id
+booking_datetime
+Booking requests require:
+service_id
+customer_name
+customer_phone
+booking_datetime
+If required information is missing, the system returns ASK_USER. When the required context is complete, it returns CALL_TOOL.
+Testing
+
+Schema tests
+
+Repository tests
+
+API tests
+
+Booking lifecycle tests
+
+Availability and conflict tests
+
+Customer and staff tests
+
+Booking engine validation tests
+
+Booking orchestration tests
+
+Conversation system tests
+
+Conversation-to-booking integration tests
+
+Intent detection tests
+
+Entity extraction and resolution tests
+
+Context preparation tests
+
+Missing-information tests
+
+Decision engine tests
+
+Orchestrator tests
+
+Response generator tests
+
+Business tool tests
+
+Tool executor tests
+
+Multi-turn availability tests
+
+Full regression suite
+Current result:
+209 passed
+1 warning
+0 failures
+Architecture
+AI Booking Agent
+│
+├── ai_core/
+│   ├── __init__.py
+│   ├── availability.py
+│   ├── available_slots.py
+│   ├── booking_engine.py
+│   ├── business_action.py
+│   ├── business_tools.py
+│   ├── context_preparation.py
+│   ├── conversation_service.py
+│   ├── decision.py
+│   ├── decision_engine.py
+│   ├── entities.py
+│   ├── entity_extractor.py
+│   ├── entity_resolver.py
+│   ├── intent.py
+│   ├── intent_detector.py
+│   ├── missing_fields.py
+│   ├── missing_information.py
+│   ├── orchestrator.py
+│   ├── resolved_entities.py
+│   ├── response_generator.py
+│   ├── staff_availability.py
+│   └── tool_executor.py
+│
+├── api/
+│   ├── main.py
+│   ├── http_errors.py
+│   ├── routes/
+│   │   ├── services.py
+│   │   ├── bookings.py
+│   │   ├── conversations.py
+│   │   ├── customers.py
+│   │   └── staff.py
+│   └── schemas/
+│       ├── service.py
+│       ├── booking.py
+│       ├── conversation.py
+│       ├── availability.py
+│       ├── customer.py
+│       ├── staff.py
+│       └── staff_availability.py
+│
+├── database/
+│   ├── connection.py
+│   └── repositories/
+│       ├── services.py
+│       ├── bookings.py
+│       ├── conversations.py
+│       ├── messages.py
+│       ├── availability.py
+│       ├── customers.py
+│       ├── staff.py
+│       └── staff_availability.py
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_availability.py
+│   ├── test_bookings.py
+│   ├── test_business_tools.py
+│   ├── test_context_preparation.py
+│   ├── test_conversation_repository.py
+│   ├── test_conversation_schemas.py
+│   ├── test_conversation_service.py
+│   ├── test_conversations_api.py
+│   ├── test_customers.py
+│   ├── test_decision.py
+│   ├── test_decision_engine.py
+│   ├── test_entities.py
+│   ├── test_health.py
+│   ├── test_intent.py
+│   ├── test_message_repository.py
+│   ├── test_missing_information.py
+│   ├── test_orchestrator.py
+│   ├── test_resolved_entities.py
+│   ├── test_response_generator.py
+│   ├── test_services.py
+│   ├── test_staff.py
+│   ├── test_staff_availability.py
+│   └── test_tool_executor.py
+│
+├── docs/
+├── .env.example
+├── .gitignore
+└── README.md
+Current layered flow:
+Client
    ↓
-Conversation / AI Layer
+FastAPI
    ↓
-Business Tools
+API Routes
+   ↓
+Pydantic Validation
+   ↓
+Conversation Service / AI Core / Booking Engine
+   ↓
+Business Rules & Orchestration
+   ↓
+Repository Layer
+   ↓
+MongoDB
+AI Conversation Flow
+User Message
+      ↓
+Intent Detection
+      ↓
+Entity Extraction
+      ↓
+Entity Resolution
+      ↓
+Context Preparation
+      ↓
+Merge With Existing Context
+      ↓
+Decision Engine
+      ↓
+ASK_USER / CALL_TOOL / UNKNOWN
+      ↓
+Response Generator / Tool Executor
+      ↓
+Business Tools / Booking Engine
+      ↓
+Repositories
+      ↓
+MongoDB
+The architecture keeps HTTP routing, conversation state, AI decisions, booking rules, and persistence separated.
+API
+Health
+GET /health
+Provides a basic application health check.
+Services
+GET /services
+Returns active services used by booking and AI workflows.
+Bookings
+POST /bookings
+GET /bookings
+GET /bookings/{booking_id}
+PATCH /bookings/{booking_id}
+PATCH /bookings/{booking_id}/cancel
+Booking operations pass through application-level business rules before persistence.
+Booking Request
+      ↓
+Service Validation
+      ↓
+Business Hours
+      ↓
+Staff Validation
+      ↓
+Service-to-Staff Relationship
+      ↓
+Staff Availability
+      ↓
+Conflict Detection
+      ↓
+Create / Update Booking
+Conflicting reservations return:
+409 Conflict
+Booking Rescheduling
+PATCH /bookings/{booking_id} supports partial updates through BookingUpdate.
+Retrieve Existing Booking
+      ↓
+Merge Existing + Updated Fields
+      ↓
+Build Candidate Booking
+      ↓
+Validate Candidate
+      ↓
+Exclude Current Booking
+      ↓
+Apply Update
+The existing booking is excluded from its own conflict check, preventing false self-conflicts while still protecting against collisions with other reservations.
+Conversations
+POST /conversations
+GET /conversations/{conversation_id}
+POST /conversations/{conversation_id}/messages
+GET /conversations/{conversation_id}/messages
+PATCH /conversations/{conversation_id}/booking-context
+POST /conversations/{conversation_id}/bookings
+A new conversation starts with an active state and an empty booking context:
+state = active
+
+booking_context:
+  service_id = None
+  customer_name = None
+  customer_phone = None
+  booking_datetime = None
+  staff_id = None
+Messages are stored independently from the conversation document so history can grow without continuously expanding a single MongoDB document.
+Booking Context
+BookingContext stores incomplete information while it is collected over multiple messages:
+BookingContext
+├── service_id
+├── customer_name
+├── customer_phone
+├── booking_datetime
+└── staff_id
+All fields are optional at the conversation stage. Partial updates preserve previously collected values.
+AI Conversation Processing
+User Message
+      ↓
+Intent Detection
+      ↓
+Entity Extraction
+      ↓
+Entity Resolution
+      ↓
+Context Preparation
+      ↓
+Merge With Existing Context
+      ↓
+Decision Engine
+For an incomplete request:
+User:
+I want to book Haircut
+
+      ↓
+
+Intent:
+BOOK
+
+      ↓
+
+Missing Information
+      ↓
+
+ASK_USER
+When the required context becomes complete:
+Complete Context
+      ↓
+Decision Engine
+      ↓
+CALL_TOOL
+      ↓
+Business Action
+      ↓
+Tool Executor
+      ↓
+Booking Engine / Application Logic
+      ↓
+Repositories
+      ↓
+MongoDB
+Booking and availability intents can continue across multiple messages through persisted active_intent.
+Create Booking from Conversation
+POST /conversations/{conversation_id}/bookings
+A booking is executed only after required booking context is complete.
+Conversation
+      ↓
+Booking Context
+      ↓
+Complete?
+ ┌────┴────┐
+ │         │
+No        Yes
+ │         │
+ ▼         ▼
+422    BookingCreate
+            ↓
+      Booking Engine
+            ↓
+      Business Rules
+            ↓
+        MongoDB
+Staff
+GET /staff
+GET /staff/{staff_id}
+Staff members can be linked to services and assigned individual working schedules.
+Available Time Slots
+GET /staff/{staff_id}/available-slots
+Example:
+GET /staff/{staff_id}/available-slots?target_date=2026-08-16&start_hour=9&end_hour=17&duration_minutes=60&interval_minutes=30
+Slot generation considers staff schedules, requested duration, confirmed staff bookings, conflict rules, and scheduling boundaries.
+AI Core & Controlled Execution
+The AI Core is a deterministic decision layer between conversation input and backend business logic.
+AI Core
+│
+├── Intent Detection
+├── Entity Extraction
+├── Entity Resolution
+├── Context Preparation
+├── Missing-Field Detection
+├── Decision Engine
+├── Response Generation
+├── Orchestration
+└── Controlled Tool Execution
+Conversational next actions are represented separately from business actions.
+Current next actions:
+
+ASK_USER
+UPDATE_CONTEXT
+CALL_TOOL
+COMPLETE
+UNKNOWN
+Current controlled business actions:
+CREATE_BOOKING
+GET_SERVICES
+GET_STAFF
+GET_AVAILABLE_TIMES
+Example:
+Intent: CHECK_AVAILABILITY
+      ↓
+Required Context Complete?
+      ↓
+CALL_TOOL
+      ↓
+GET_AVAILABLE_TIMES
+      ↓
+Tool Executor
+      ↓
+Business Tool
+      ↓
+Existing Availability Logic
+For booking creation:
+Intent: BOOK
+      ↓
+Required Context Complete?
+      ↓
+CALL_TOOL
+      ↓
+CREATE_BOOKING
+      ↓
+Conversation Context
+      ↓
+BookingCreate
+      ↓
+Booking Engine
+      ↓
+Validation
+      ↓
+Repositories
+      ↓
+MongoDB
+The Tool Executor never bypasses the Booking Engine or repositories and never grants the AI direct database access.
+Core Booking Rules
+The system enforces deterministic rules before persistence.
+Scheduling
+Example business hours:
+09:00 → 17:00
+For a 60-minute service:
+16:00 → 17:00   ✓
+16:30 → 17:30   ✗
+The full service duration must fit inside the configured availability window.
+Conflict Detection
+Conflict detection uses time intervals rather than exact start-time equality.
+Existing:
+10:00 → 11:00
+
+Requested:
+10:30 → 11:30
+
+Result:
+CONFLICT
+The engine detects partial overlap, contained intervals, containing intervals, and identical times.
+Back-to-Back Bookings
+Adjacent reservations are allowed:
+Booking A:
+10:00 → 11:00
+
+Booking B:
+11:00 → 12:00
+
+Result:
+No Conflict
+Staff-Aware Scheduling
+When a staff member is selected, the engine validates:
+Staff Exists
+      ↓
+Supports Service
+      ↓
+Is Working
+      ↓
+Has No Conflicting Booking
+Booking Lifecycle
+Created
+   ↓
+confirmed
+   ↓
+Cancel
+   ↓
+cancelled
+Confirmed bookings occupy scheduling slots. Cancelled bookings release their slots while preserving booking history.
+Conversation State vs Booking Status
+Conversation state:
+active
+completed
+Booking status:
+confirmed
+cancelled
+These lifecycles remain separate to avoid mixing conversation concerns with booking-domain rules.
+Validation & Error Handling
+Input validation is handled with Pydantic.
+Schema-level validation covers:
+
+required and typed identifiers
+customer name and phone constraints
+datetime parsing
+controlled booking status values
+controlled day-of-week values
+valid availability time ranges
+controlled message roles
+message content validation
+partial BookingContext validation
+Application-level validation protects against:
+missing services
+bookings outside business hours
+bookings extending beyond closing time
+missing staff
+unsupported staff-service combinations
+unavailable staff
+overlapping confirmed reservations
+conflicting rescheduling
+missing conversations
+incomplete booking context
+incomplete availability context
+unsupported AI actions
+Booking-related HTTP errors are centralized in:
+api/http_errors.py
+Examples:
+Service not found
+→ 404 Not Found
+
+Booking time conflicts with an existing booking
+→ 409 Conflict
+
+Booking is outside business hours
+→ 422 Unprocessable Entity
+
+Booking context is incomplete
+→ 422 Unprocessable Entity
+
+Conversation not found
+→ 404 Not Found
+Testing
+The project uses Pytest and FastAPI testing utilities.
+Run the full suite:
+
+python -m pytest -v
+Current result:
+209 passed
+1 warning
+0 failures
+Testing covers:
+API & Schemas
+├── Health
+├── Services
+├── Bookings
+├── Customers
+├── Staff
+└── Conversations
+
+Booking Domain
+├── Validation
+├── Conflict Detection
+├── Creation
+├── Rescheduling
+├── Cancellation
+├── Staff Availability
+└── Available Slots
+
+Conversation System
+├── Persistence
+├── History
+├── State
+├── Booking Context
+├── Context Preservation
+├── Booking Execution
+├── Active Intent
+└── Multi-Turn Continuation
+
+AI Core
+├── Intent Detection
+├── Entity Extraction
+├── Entity Resolution
+├── Context Preparation
+├── Missing Information
+├── Decision Engine
+├── Orchestration
+├── Response Generation
+├── Business Tools
+└── Tool Execution
+
+Integration
+├── Conversation → Booking Engine
+├── AI Decision → Business Tool
+└── Full Regression Suite
+The full regression suite is run after booking, scheduling, conversation, AI Core, and integration changes.
+Technology Stack
+Technology	Purpose
+Python 3.13	Core language
+FastAPI	REST API
+MongoDB	NoSQL database
+PyMongo	MongoDB driver
+Pydantic	Validation
+Pytest	Automated testing
+Uvicorn	ASGI development server
+Git / GitHub	Version control
+Planned:
+LLM API
+structured LLM tool calling
+guardrails
+Docker
+GitHub Actions
+logging and deployment preparation
+optional React dashboard
+Development Roadmap
+Phase 1 — Foundation
+Completed
+Repository structure, Git configuration, project scope, and domain documentation.
+
+Phase 2 — API & MongoDB Foundation
+Completed
+FastAPI, MongoDB, PyMongo, repositories, schemas, and initial automated tests.
+
+Phase 3 — Booking System
+Completed
+Booking CRUD, lifecycle management, validation, cancellation, persistence, and API testing.
+
+Phase 4 — Customers, Staff & Availability
+Completed
+Customer and staff management, service relationships, availability, staff schedules, conflicts, slot generation, APIs, and regression tests.
+
+Phase 5 — Booking Engine Expansion
+Completed
+Centralized booking validation and orchestration for creation, updates, rescheduling, cancellation, staff-aware scheduling, conflicts, and shared HTTP error mapping.
+
+Phase 6 — Conversation System
+Completed
+Persistent conversations, messages, history, state, BookingContext, partial updates, conversation services, REST APIs, and booking-engine integration.
+
+Phase 7 — AI Core & Controlled Execution
+Completed
+Intent detection, entity extraction and resolution, context preparation, missing-information detection, structured decisions, orchestration, response generation, business-action selection, and controlled execution.
+
+Phase 8 — AI Business Tools
+Completed
+Implemented controlled reusable tools and decision routing for:
+
+get_services
+get_staff
+get_available_times
+create_booking
+Also implemented:
+intent-to-business-action routing
+context requirements per supported workflow
+controlled execution through existing backend logic
+availability continuation across multiple messages
+business-tool and decision-engine regression tests
+full regression validation
+Final Phase 8 direction:
+User Message
+      ↓
+AI Core
+      ↓
+Decision Engine
+      ↓
+Business Action
+      ↓
+Tool Executor
+      ↓
+Business Tool / Booking Engine
+      ↓
+Validation & Business Rules
+      ↓
+Repositories
+      ↓
+MongoDB
+No AI component writes directly to MongoDB.
+Phase 9 — LLM Integration
+Next
+Planned:
+
+LLM API integration
+structured outputs
+controlled tool calling
+prompt design
+guardrails
+deterministic backend validation after model decisions
+fallback behavior for invalid or unsupported model outputs
+tests around the LLM boundary
+The LLM will interpret user language and request approved tools, while deterministic application logic remains responsible for validation and execution.
+Phase 10 — Production Engineering
+Planned
+Docker
+GitHub Actions
+CI
+security validation
+logging
+deployment preparation
+A React dashboard may be added later as a presentation layer without changing backend business rules.
+Local Development
+Clone
+git clone https://github.com/Danakaabi/ai-booking-agent-.git
+cd ai-booking-agent
+Virtual Environment
+python -m venv .venv
+source .venv/bin/activate
+MongoDB
+Verify MongoDB:
+mongosh --eval 'db.runCommand({ ping: 1 })'
+Expected:
+{ ok: 1 }
+MongoDB must be running before repository and integration tests.
+If the Homebrew service is unavailable, MongoDB can be started manually with the configured local mongod setup before running tests.
+
+Run API
+uvicorn api.main:app --reload
+Swagger:
+http://127.0.0.1:8000/docs
+Run Tests
+python -m pytest -v
+Current expected result:
+209 passed
+1 warning
+0 failures
+Current Development Focus
+Foundation                         ✓
+FastAPI + MongoDB                  ✓
+Booking System                     ✓
+Availability & Scheduling          ✓
+Customers & Staff                  ✓
+Booking Engine                     ✓
+Conversation System                ✓
+Intent Detection                   ✓
+Entity Extraction & Resolution     ✓
+Context Preparation                ✓
+Missing Information                ✓
+Decision Engine                    ✓
+Response Generation                ✓
+AI Orchestration                   ✓
+Controlled Tool Execution          ✓
+AI Business Tools                  ✓
+Multi-Turn Availability            ✓
+Full Regression                    ✓
+
+LLM Integration                    → NEXT
+Production Engineering
+Dashboard / UI                     → LATER
+The current objective is:
+Integrate an LLM at a controlled boundary while preserving deterministic backend validation and explicit tool execution.
+Target AI Architecture
+Client
+   ↓
+FastAPI
+   ↓
+Conversation System
+   ↓
+LLM Boundary
+   ↓
+AI Core
+   ↓
+Controlled Business Tools
    ↓
 Booking Engine
    ↓
-Scheduling
+Validation & Scheduling Rules
+   ↓
+Repositories
    ↓
 MongoDB
-```
+The AI layer decides:
+What does the user mean?
+Which approved operation is needed?
+What information is still missing?
+Which controlled tool should be requested?
+The deterministic backend decides:
+Is the operation allowed?
+Is the context complete?
+Does it satisfy booking rules?
+How should it be executed?
+The database persists only validated results.
+Why Backend-First?
+The project deliberately does not begin with an LLM.
+A booking agent must reliably answer questions such as:
 
-The same deterministic booking engine, conversation infrastructure, and AI Core can support multiple interfaces without duplicating business rules.
+Does the service exist?
+Does the staff member provide it?
+Is the business open?
+Is the staff member working?
+Does the full service duration fit?
+Does another confirmed booking overlap?
+Can this booking be safely rescheduled?
+Is the conversation context complete?
+These decisions should not depend on probabilistic model output.
+The LLM can therefore be added as an interpretation layer without becoming the authority for booking rules or persistence.
 
----
+Engineering Principles
+Separation of concerns
+Repository pattern
+Centralized booking orchestration
+Dedicated conversation service
+Validation at application boundaries
+Deterministic scheduling
+Conflict-safe booking operations
+Persistent conversation state
+Partial booking-context collection
+Structured AI decisions
+Explicit business-action routing
+Controlled tool execution
+Shared HTTP error mapping
+Automated regression testing
+Framework-independent business logic
+No direct AI access to MongoDB
+No secrets committed to Git
+Long-Term Vision
+The project is intended to evolve into a reusable AI booking agent for domains such as:
+salons
+clinics
+healthcare scheduling
+events
+professional services
+appointment-based businesses
+Web / Mobile / Chat / Dashboard
+              ↓
+      Conversation / AI Layer
+              ↓
+        Business Tools
+              ↓
+        Booking Engine
+              ↓
+          Scheduling
+              ↓
+           MongoDB
+The same deterministic booking engine, conversation infrastructure, AI Core, and controlled tools can support multiple interfaces without duplicating business rules.
+Project Philosophy
+AI should interpret and reason about the request.
+Conversation infrastructure should preserve context and state.
 
-# Project Philosophy
+Business logic should decide what is allowed.
 
-> **AI should reason about the request.**
->
-> **Conversation infrastructure should preserve context and state.**
->
-> **Business logic should decide what is allowed.**
->
-> **Controlled tools should execute validated operations.**
->
-> **The database should persist the validated result.**
+Controlled tools should execute approved operations.
 
----
+The database should persist only validated results.
 
-<p align="center">
-  <strong>AI Booking Agent</strong><br>
-  Backend Engineering • Booking Systems • Scheduling • Conversation Systems • AI Agents • System Design
-</p>
+<p align="center"> <strong>AI Booking Agent</strong><br> Backend Engineering • Booking Systems • Scheduling • Conversation Systems • AI Agents • System Design </p>
