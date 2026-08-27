@@ -117,3 +117,95 @@ def test_process_message_continues_active_booking_intent():
     assert decision.intent == Intent.BOOK
     assert decision.next_action == NextAction.ASK_USER
     assert context_update.customer_phone == "0501234567"
+
+
+def test_process_message_preserves_deterministic_behavior_without_llm():
+    decision, context_update = process_message(
+        "I want to book Haircut",
+        current_context=BookingContext(
+            customer_name="Dana",
+            customer_phone="0501234567",
+            booking_datetime=datetime(2026, 8, 24, 17, 0),
+        ),
+        services_by_id={
+            "service-123": {
+                "name": "Haircut",
+            }
+        },
+        staff_members=[],
+    )
+
+    assert decision.intent == Intent.BOOK
+    assert decision.entities.service_name == "Haircut"
+    assert decision.business_action == BusinessAction.CREATE_BOOKING
+    assert decision.next_action == NextAction.CALL_TOOL
+    assert context_update.service_id == "service-123"
+
+
+from ai_core.llm_output import LLMInterpretation
+
+
+class FakeOrchestratorLLMProvider:
+    def interpret(self, message: str) -> LLMInterpretation:
+        return LLMInterpretation(
+            intent=Intent.BOOK,
+            entities={
+                "service_name": "Haircut",
+                "customer_name": "Dana",
+                "customer_phone": "0501234567",
+                "booking_datetime": datetime(2026, 8, 24, 17, 0),
+            },
+        )
+
+
+def test_process_message_can_use_llm_interpretation():
+    decision, context_update = process_message(
+        "Arrange my appointment please",
+        current_context=BookingContext(),
+        services_by_id={
+            "service-123": {
+                "name": "Haircut",
+            }
+        },
+        staff_members=[],
+        llm_provider=FakeOrchestratorLLMProvider(),
+    )
+
+    assert decision.intent == Intent.BOOK
+    assert decision.entities.customer_name == "Dana"
+    assert decision.entities.customer_phone == "0501234567"
+    assert decision.entities.service_name == "Haircut"
+    assert context_update.service_id == "service-123"
+    assert decision.next_action == NextAction.CALL_TOOL
+
+
+from ai_core.llm_errors import LLMProviderError
+
+
+class FailingOrchestratorLLMProvider:
+    def interpret(self, message: str) -> LLMInterpretation:
+        raise LLMProviderError("LLM unavailable")
+
+
+def test_process_message_falls_back_when_llm_provider_fails():
+    decision, context_update = process_message(
+        "I want to book Haircut",
+        current_context=BookingContext(
+            customer_name="Dana",
+            customer_phone="0501234567",
+            booking_datetime=datetime(2026, 8, 24, 17, 0),
+        ),
+        services_by_id={
+            "service-123": {
+                "name": "Haircut",
+            }
+        },
+        staff_members=[],
+        llm_provider=FailingOrchestratorLLMProvider(),
+    )
+
+    assert decision.intent == Intent.BOOK
+    assert decision.entities.service_name == "Haircut"
+    assert decision.business_action == BusinessAction.CREATE_BOOKING
+    assert decision.next_action == NextAction.CALL_TOOL
+    assert context_update.service_id == "service-123"
