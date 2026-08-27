@@ -636,3 +636,56 @@ def test_process_conversation_message_continues_availability_across_messages():
         conversations_collection.delete_one(
             {"_id": ObjectId(conversation["id"])}
         )
+
+
+from ai_core.llm_output import LLMInterpretation
+
+
+class FakeConversationLLMProvider:
+    def interpret(self, message: str) -> LLMInterpretation:
+        return LLMInterpretation(
+            intent=Intent.BOOK,
+            entities={
+                "service_name": "Haircut",
+                "customer_name": "Dana",
+                "customer_phone": "0501234567",
+                "booking_datetime": datetime(2026, 8, 24, 17, 0),
+            },
+        )
+
+
+def test_process_conversation_message_can_use_llm_provider():
+    conversation = create_conversation()
+
+    try:
+        decision = process_conversation_message(
+            conversation_id=conversation["id"],
+            message="Arrange my appointment please",
+            llm_provider=FakeConversationLLMProvider(),
+        )
+
+        assert decision is not None
+        assert decision.intent == Intent.BOOK
+        assert decision.next_action == NextAction.CALL_TOOL
+
+        updated_conversation = get_conversation_by_id(
+            conversation["id"]
+        )
+
+        assert updated_conversation is not None
+        assert (
+            updated_conversation["booking_context"]["customer_name"]
+            == "Dana"
+        )
+        assert (
+            updated_conversation["booking_context"]["customer_phone"]
+            == "0501234567"
+        )
+
+    finally:
+        messages_collection.delete_many(
+            {"conversation_id": conversation["id"]}
+        )
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )

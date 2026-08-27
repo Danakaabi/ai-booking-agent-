@@ -392,3 +392,68 @@ def test_assistant_message_does_not_trigger_ai_context_update():
         conversations_collection.delete_one(
             {"_id": ObjectId(conversation["id"])}
         )
+
+
+from ai_core.intent import Intent
+from ai_core.llm_output import LLMInterpretation
+from api.routes.conversations import get_llm_provider
+
+
+class FakeAPILLMProvider:
+    def interpret(self, message: str) -> LLMInterpretation:
+        return LLMInterpretation(
+            intent=Intent.BOOK,
+            entities={
+                "service_name": "Haircut",
+                "customer_name": "Dana",
+                "customer_phone": "0501234567",
+                "booking_datetime": datetime(2026, 8, 24, 17, 0),
+            },
+        )
+
+
+def test_user_message_can_use_llm_provider_through_api():
+    app.dependency_overrides[get_llm_provider] = (
+        lambda: FakeAPILLMProvider()
+    )
+
+    create_response = client.post("/conversations")
+    conversation = create_response.json()
+
+    try:
+        response = client.post(
+            f"/conversations/{conversation['id']}/messages",
+            json={
+                "role": "user",
+                "content": "Arrange my appointment please",
+            },
+        )
+
+        assert response.status_code == 200
+
+        conversation_response = client.get(
+            f"/conversations/{conversation['id']}"
+        )
+
+        assert conversation_response.status_code == 200
+
+        updated = conversation_response.json()
+
+        assert updated["active_intent"] == Intent.BOOK.value
+        assert updated["booking_context"]["customer_name"] == "Dana"
+        assert (
+            updated["booking_context"]["customer_phone"]
+            == "0501234567"
+        )
+        assert updated["booking_context"]["service_id"] is not None
+
+    finally:
+        app.dependency_overrides.clear()
+
+        messages_collection.delete_many(
+            {"conversation_id": conversation["id"]}
+        )
+
+        conversations_collection.delete_one(
+            {"_id": ObjectId(conversation["id"])}
+        )

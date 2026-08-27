@@ -14,6 +14,7 @@ from ai_core.decision import AIDecision, NextAction
 from ai_core.orchestrator import process_message
 from ai_core.response_generator import generate_response
 from ai_core.intent import Intent
+from ai_core.llm_provider import LLMProvider
 
 from database.repositories.conversations import(
     create_conversation,
@@ -176,6 +177,8 @@ def get_conversation(
 def process_conversation_message(
     conversation_id: str,
     message: str,
+    *,
+    llm_provider: LLMProvider | None = None,
 ) -> AIDecision | None:
     """Process a user message through the AI core and persist context updates."""
 
@@ -202,6 +205,7 @@ def process_conversation_message(
         services_by_id=get_active_services_by_id(),
         staff_members=get_all_staff(),
         active_intent=active_intent,
+        llm_provider=llm_provider,
     )
 
     if (

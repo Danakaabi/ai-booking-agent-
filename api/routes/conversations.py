@@ -1,4 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from ai_core.llm_factory import create_llm_provider
+from ai_core.llm_provider import LLMProvider
 from ai_core.conversation_service import (
     add_message_to_conversation,
     execute_booking_from_conversation,
@@ -24,6 +26,10 @@ router = APIRouter(
 )
 
 
+def get_llm_provider() -> LLMProvider | None:
+    return create_llm_provider()
+
+
 @router.post("")
 def create_conversation_route() -> dict:
     return start_conversation()
@@ -47,6 +53,7 @@ def get_conversation_route(conversation_id: str) -> dict:
 def add_message_route(
     conversation_id: str,
     message: MessageCreate,
+    llm_provider: LLMProvider | None = Depends(get_llm_provider),
 ) -> dict:
     created_message = add_message_to_conversation(
         conversation_id=conversation_id,
@@ -63,6 +70,7 @@ def add_message_route(
         process_conversation_message(
             conversation_id=conversation_id,
             message=message.content,
+            llm_provider=llm_provider,
         )
 
     return created_message
