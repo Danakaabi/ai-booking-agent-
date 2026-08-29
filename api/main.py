@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes.services import router as services_router
 from api.routes.bookings import router as bookings_router
@@ -9,6 +10,14 @@ from api.routes.conversations import router as conversations_router
 app = FastAPI(
     title="AI Booking Agent API",
     version="0.1.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(bookings_router)
