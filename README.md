@@ -7,48 +7,64 @@
 <h1 align="center">AI Booking Agent</h1>
 
 <p align="center">
-  <strong>Backend-first intelligent booking system evolving into a reusable AI agent.</strong>
+  <strong>Backend-first intelligent booking system evolving into a reusable AI-powered booking agent.</strong>
 </p>
 
 <p align="center">
-  Built with FastAPI, MongoDB, PyMongo, Pydantic and Pytest.
+  Built with FastAPI, MongoDB, deterministic AI logic, controlled LLM integration, and React.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white" alt="FastAPI">
   <img src="https://img.shields.io/badge/MongoDB-Database-47A248?logo=mongodb&logoColor=white" alt="MongoDB">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" alt="React">
+  <img src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white" alt="Vite">
   <img src="https://img.shields.io/badge/Pydantic-Validation-E92063" alt="Pydantic">
-  <img src="https://img.shields.io/badge/Pytest-209%20Passing-0A9EDC?logo=pytest&logoColor=white" alt="Tests">
-  <img src="https://img.shields.io/badge/Phase%208-Completed-success" alt="Phase 8">
-  <img src="https://img.shields.io/badge/Status-Active%20Development-orange" alt="Status">
+  <img src="https://img.shields.io/badge/Pytest-234%20Passing-0A9EDC?logo=pytest&logoColor=white" alt="Tests">
+  <img src="https://img.shields.io/badge/Phase%209-Completed-success" alt="Phase 9">
+  <img src="https://img.shields.io/badge/Phase%2010-In%20Progress-orange" alt="Phase 10">
 </p>
 
 ---
 
 ## Overview
 
-**AI Booking Agent** is a reusable booking backend designed to evolve into an AI-powered booking agent.
+**AI Booking Agent** is a reusable booking system designed around deterministic business rules, persistent conversation state, controlled AI execution, optional LLM-assisted language interpretation, and a React-based conversational interface.
 
-The project is intentionally developed **backend-first** so that booking rules, scheduling, availability, staff assignment, conflict detection, validation, conversation state, context management, AI decisions, and controlled tool execution are reliable before introducing an external LLM.
+The project is intentionally developed **backend-first** so that booking rules, scheduling, availability, staff assignment, conflict detection, validation, conversation state, context management, AI decisions, and controlled tool execution remain reliable regardless of which user interface or language model is connected to the system.
+
+The architecture has evolved from a pure backend into a full conversational application:
 
 ```text
-User / Client
-      ↓
+User
+  ↓
+React Chat Interface
+  ↓
 FastAPI
-      ↓
-Conversation API / Booking API
-      ↓
-Conversation Service / AI Core / Booking Engine
-      ↓
-Validation & Business Rules
-      ↓
+  ↓
+Conversation System
+  ↓
+LLM / Deterministic Interpreter
+  ↓
+AI Core
+  ↓
+Decision Engine
+  ↓
+Controlled Business Tools
+  ↓
+Booking Engine
+  ↓
 Repository Layer
-      ↓
+  ↓
 MongoDB
 ```
 
-The AI layer interacts with the application through explicit business tools rather than accessing MongoDB directly. This keeps AI interpretation separate from deterministic booking rules and persistence.
+The LLM is not the authority over booking operations.
+
+It cannot directly access MongoDB, create bookings, bypass the Booking Engine, or independently choose arbitrary backend operations.
+
+The deterministic application remains responsible for validation and execution.
 
 ---
 
@@ -64,18 +80,25 @@ The AI layer interacts with the application through explicit business tools rath
 | Phase 6 — Conversation System | ✅ Completed |
 | Phase 7 — AI Core & Controlled Execution | ✅ Completed |
 | Phase 8 — AI Business Tools | ✅ Completed |
-| Phase 9 — LLM Integration | ➡️ Next |
-| Phase 10 — Production Engineering | Planned |
+| Phase 9 — LLM Integration | ✅ Completed |
+| Phase 10 — React Chat Interface & AI Booking Agent Simulation | 🚧 In Progress |
+| Production Engineering | Planned |
 
-Current automated test status:
+Latest full backend regression before Phase 10:
 
 ```text
-209 passed
-1 warning
+234 passed
 0 failures
 ```
 
-The remaining warning is a FastAPI/Starlette TestClient dependency deprecation warning and does not represent a failing test.
+During Phase 10, the focused backend regression after introducing development CORS support also passed:
+
+```text
+17 passed
+0 failures
+```
+
+The Phase 10 frontend currently passes ESLint validation.
 
 ---
 
@@ -161,6 +184,7 @@ The remaining warning is a FastAPI/Starlette TestClient dependency deprecation w
 - [x] Active-intent persistence
 - [x] Multi-turn booking continuation
 - [x] Multi-turn availability continuation
+- [x] LLM-aware message processing boundary
 
 ### AI Core
 
@@ -178,16 +202,17 @@ The remaining warning is a FastAPI/Starlette TestClient dependency deprecation w
 - [x] Tool executor
 - [x] Conversation-to-tool execution
 - [x] No direct AI access to MongoDB
+- [x] Deterministic fallback behavior
 
 ### AI Business Tools
 
 The controlled execution layer currently exposes:
 
 ```text
-GET_SERVICES        → get_services()
-GET_STAFF           → get_staff()
-GET_AVAILABLE_TIMES → get_available_times()
-CREATE_BOOKING      → execute_booking_from_conversation()
+GET_SERVICES         → get_services()
+GET_STAFF            → get_staff()
+GET_AVAILABLE_TIMES  → get_available_times()
+CREATE_BOOKING       → execute_booking_from_conversation()
 ```
 
 The decision layer maps supported intents to explicit business actions:
@@ -216,9 +241,127 @@ customer_phone
 booking_datetime
 ```
 
-If required information is missing, the system returns `ASK_USER`.
+If required information is missing, the system returns:
 
-When the required context is complete, the decision layer returns `CALL_TOOL` with an approved `BusinessAction`.
+```text
+ASK_USER
+```
+
+When the required context is complete, the decision layer returns:
+
+```text
+CALL_TOOL
+```
+
+with an approved `BusinessAction`.
+
+### LLM Integration
+
+- [x] LLM provider abstraction
+- [x] Structured LLM output model
+- [x] LLM interpreter
+- [x] Message interpreter boundary
+- [x] OpenAI provider implementation
+- [x] OpenAI Python SDK integration
+- [x] Environment-based LLM configuration
+- [x] LLM-specific error handling
+- [x] Provider factory
+- [x] Structured natural-language interpretation
+- [x] Integration with existing orchestrator
+- [x] Integration with conversation processing
+- [x] FastAPI dependency boundary for the provider
+- [x] Deterministic fallback when LLM is disabled
+- [x] Tests around the LLM boundary
+- [x] No direct LLM access to MongoDB
+- [x] No direct LLM booking execution
+- [x] No LLM bypass of Tool Executor
+- [x] No LLM bypass of Booking Engine
+
+The LLM is disabled by default:
+
+```text
+LLM_ENABLED=false
+```
+
+When disabled:
+
+```text
+User Message
+      ↓
+Deterministic AI Core
+```
+
+When enabled with valid configuration:
+
+```text
+User Message
+      ↓
+OpenAI Provider
+      ↓
+Structured Output
+      ↓
+Existing AI Core
+      ↓
+Decision Engine
+      ↓
+Controlled Execution
+```
+
+The real external OpenAI call remains configuration-dependent and requires a valid API key.
+
+### React Chat Interface
+
+Phase 10 currently includes:
+
+- [x] React frontend foundation
+- [x] Vite development environment
+- [x] ESLint
+- [x] Responsive chat shell
+- [x] Message composer
+- [x] Accessible message input
+- [x] Loading-ready UI structure
+- [x] Frontend environment configuration
+- [x] API base URL configuration
+- [x] Local environment files excluded from Git
+- [x] Development CORS support
+- [x] Dedicated conversation API client
+- [x] Create-conversation API function
+- [x] Send-message API function
+- [x] Conversation-history API function
+- [ ] Connect chat state to the conversation API
+- [ ] Render user and assistant messages
+- [ ] Loading state during message processing
+- [ ] User-facing API error state
+- [ ] New conversation interaction
+- [ ] Conversation history UI
+- [ ] Booking context panel
+- [ ] Current intent display
+- [ ] Booking status display
+
+The React application does not contain booking business rules.
+
+Its responsibility is limited to:
+
+```text
+UI
+State
+API Communication
+User Interaction
+Rendering
+```
+
+Backend responsibilities remain:
+
+```text
+AI Decisions
+Entity Resolution
+Context Management
+Booking Rules
+Validation
+Tool Execution
+Persistence
+MongoDB
+```
 
 ---
 
@@ -243,8 +386,16 @@ AI Booking Agent
 │   ├── entity_resolver.py
 │   ├── intent.py
 │   ├── intent_detector.py
+│   ├── llm_config.py
+│   ├── llm_errors.py
+│   ├── llm_factory.py
+│   ├── llm_interpreter.py
+│   ├── llm_output.py
+│   ├── llm_provider.py
+│   ├── message_interpreter.py
 │   ├── missing_fields.py
 │   ├── missing_information.py
+│   ├── openai_provider.py
 │   ├── orchestrator.py
 │   ├── resolved_entities.py
 │   ├── response_generator.py
@@ -281,6 +432,22 @@ AI Booking Agent
 │       ├── staff.py
 │       └── staff_availability.py
 │
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── conversations.js
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── .env.example
+│   ├── .gitignore
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+│
 ├── tests/
 ├── docs/
 ├── .env.example
@@ -291,20 +458,24 @@ AI Booking Agent
 ### Layered Flow
 
 ```text
-Client
-   ↓
+React Client
+      ↓
 FastAPI
-   ↓
+      ↓
 API Routes
-   ↓
+      ↓
 Pydantic Validation
-   ↓
-Conversation Service / AI Core / Booking Engine
-   ↓
-Business Rules & Orchestration
-   ↓
+      ↓
+Conversation Service
+      ↓
+LLM / Deterministic Interpreter
+      ↓
+AI Core / Booking Engine
+      ↓
+Business Rules & Controlled Execution
+      ↓
 Repository Layer
-   ↓
+      ↓
 MongoDB
 ```
 
@@ -313,9 +484,11 @@ MongoDB
 ```text
 User Message
       ↓
-Intent Detection
+Message Interpreter
       ↓
-Entity Extraction
+LLM or Deterministic Interpreter
+      ↓
+Intent + Extracted Entities
       ↓
 Entity Resolution
       ↓
@@ -336,7 +509,58 @@ Repositories
 MongoDB
 ```
 
-The architecture keeps HTTP routing, conversation state, AI decisions, booking rules, execution, and persistence separated.
+### LLM Boundary
+
+```text
+Natural Language
+      ↓
+LLM Provider
+      ↓
+Structured Interpretation
+      ↓
+Existing AI Core
+```
+
+The LLM does **not** execute business operations.
+
+The controlled execution path remains:
+
+```text
+Decision Engine
+      ↓
+BusinessAction
+      ↓
+Tool Executor
+      ↓
+Business Tool / Booking Engine
+      ↓
+Validation
+      ↓
+Repository
+      ↓
+MongoDB
+```
+
+### Frontend Boundary
+
+```text
+React
+  ↓
+HTTP
+  ↓
+FastAPI
+```
+
+React never connects directly to:
+
+```text
+MongoDB
+OpenAI
+Repositories
+Booking Engine
+```
+
+This preserves a single source of truth for booking and AI behavior.
 
 ---
 
@@ -442,6 +666,28 @@ Partial updates preserve previously collected values.
 
 Messages are stored independently from the conversation document so conversation history can grow without continuously expanding one MongoDB document.
 
+When a user message is submitted through the conversation API, the conversation service can process it through the configured message interpretation boundary.
+
+```text
+POST User Message
+      ↓
+Store Message
+      ↓
+Process Conversation Message
+      ↓
+LLM / Deterministic Interpreter
+      ↓
+AI Core
+      ↓
+Store Assistant Response
+```
+
+The frontend can then retrieve the updated history through:
+
+```http
+GET /conversations/{conversation_id}/messages
+```
+
 ### Staff
 
 ```http
@@ -469,7 +715,7 @@ Slot generation considers:
 
 ## AI Core & Controlled Execution
 
-The AI Core acts as a deterministic decision layer between conversational input and backend business logic.
+The AI Core acts as the deterministic decision and orchestration layer between conversational interpretation and backend business logic.
 
 ```text
 AI Core
@@ -548,9 +794,119 @@ Repositories
 MongoDB
 ```
 
-The Tool Executor does not grant the AI direct database access.
+The Tool Executor does not grant either the deterministic AI layer or the LLM direct database access.
 
 Booking creation continues through the Booking Engine, and business tools reuse existing repository and scheduling logic.
+
+---
+
+## LLM Integration
+
+Phase 9 introduced an optional language-model boundary without replacing the deterministic AI Core.
+
+The design follows:
+
+```text
+User Message
+      ↓
+Message Interpreter
+      ↓
+LLM Provider or Deterministic Interpreter
+      ↓
+Intent + ExtractedEntities
+      ↓
+Existing AI Pipeline
+```
+
+The LLM provider is represented through an abstraction rather than being coupled directly to the rest of the application.
+
+Key files include:
+
+```text
+ai_core/llm_output.py
+ai_core/llm_provider.py
+ai_core/llm_interpreter.py
+ai_core/message_interpreter.py
+ai_core/llm_errors.py
+ai_core/llm_config.py
+ai_core/llm_factory.py
+ai_core/openai_provider.py
+```
+
+### Provider Boundary
+
+```text
+Application
+     ↓
+LLMProvider
+     ↓
+OpenAIProvider
+```
+
+This makes the AI Core independent from a specific external model provider.
+
+### Structured Output
+
+The model does not return arbitrary instructions that are directly executed.
+
+Instead:
+
+```text
+LLM
+ ↓
+Structured Output
+ ↓
+Validated Interpretation
+ ↓
+Existing AI Core
+```
+
+The existing decision and execution layers remain authoritative.
+
+### Deterministic Fallback
+
+LLM usage is disabled by default:
+
+```text
+LLM_ENABLED=false
+```
+
+When disabled, the existing deterministic pipeline continues to operate normally.
+
+This means Phase 9 did not make the application dependent on an external LLM.
+
+### Security Boundary
+
+The LLM cannot:
+
+- Access MongoDB
+- Call repositories directly
+- Create bookings directly
+- Select arbitrary backend functions
+- Bypass the Decision Engine
+- Bypass the Tool Executor
+- Bypass the Booking Engine
+- Persist unvalidated booking operations
+
+The architecture therefore remains:
+
+```text
+LLM
+ ↓
+Interpretation
+ ↓
+Deterministic AI Core
+ ↓
+Controlled Execution
+```
+
+rather than:
+
+```text
+LLM
+ ↓
+Database
+```
 
 ---
 
@@ -563,20 +919,28 @@ Example:
 ```text
 User:
 I want to book Haircut
-
       ↓
-
 Intent:
 BOOK
-
       ↓
-
 Missing Information
       ↓
 ASK_USER
 ```
 
-A later message can provide the missing information without repeating the original booking intent.
+A later message can provide missing information without repeating the original booking intent.
+
+Example:
+
+```text
+Assistant:
+What name should I use for the booking?
+
+User:
+Dana
+```
+
+The persisted conversation context allows the system to continue the original workflow.
 
 When the required context becomes complete:
 
@@ -598,6 +962,129 @@ The same continuation mechanism supports availability requests through persisted
 
 ---
 
+## React Chat Interface
+
+Phase 10 introduces the first real presentation layer for the AI Booking Agent.
+
+The objective is not to create a large administration dashboard.
+
+The first target is a focused conversational experience:
+
+```text
+Open React App
+      ↓
+Start Conversation
+      ↓
+Send User Message
+      ↓
+FastAPI Receives Message
+      ↓
+Conversation System
+      ↓
+AI Core / LLM Boundary
+      ↓
+Assistant Response Stored
+      ↓
+React Loads Conversation History
+      ↓
+Chat Displays Response
+```
+
+### Current Frontend Architecture
+
+```text
+frontend/
+│
+├── src/
+│   ├── api/
+│   │   └── conversations.js
+│   ├── App.jsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.jsx
+│
+├── .env.example
+├── .gitignore
+├── eslint.config.js
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
+The frontend currently uses:
+
+```text
+React 19
+Vite 8
+ESLint
+Native React State
+Fetch API
+```
+
+No external state-management library has been introduced because the current MVP does not yet require shared application state.
+
+### Conversation API Client
+
+The frontend API layer currently provides:
+
+```text
+createConversation()
+sendMessage()
+getConversationMessages()
+```
+
+This keeps HTTP communication outside the UI component and prevents API details from being scattered throughout React components.
+
+### Frontend Environment
+
+The frontend uses:
+
+```text
+VITE_API_BASE_URL
+```
+
+Example:
+
+```text
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+
+This value is not a secret.
+
+Local environment files are excluded from Git.
+
+React must never contain:
+
+```text
+OPENAI_API_KEY
+MongoDB credentials
+Backend secrets
+```
+
+The browser communicates only with FastAPI.
+
+### Development CORS
+
+During local development:
+
+```text
+React
+http://localhost:5173
+```
+
+communicates with:
+
+```text
+FastAPI
+http://127.0.0.1:8000
+```
+
+FastAPI currently allows the React development origin through `CORSMiddleware`.
+
+The configuration does not use unrestricted wildcard origins.
+
+---
+
 ## Core Booking Rules
 
 ### Scheduling
@@ -611,7 +1098,6 @@ Business Hours:
 09:00 → 17:00
 
 60-minute service:
-
 16:00 → 17:00   ✓
 16:30 → 17:30   ✗
 ```
@@ -718,6 +1204,7 @@ Schema-level validation includes:
 - Controlled message roles
 - Message content validation
 - Partial `BookingContext` validation
+- Structured LLM output validation
 
 Application-level validation protects against:
 
@@ -733,6 +1220,8 @@ Application-level validation protects against:
 - Incomplete booking context
 - Incomplete availability context
 - Unsupported AI business actions
+- Invalid LLM configuration
+- Invalid or unsupported LLM output
 
 Booking-related HTTP errors are centralized in:
 
@@ -750,23 +1239,24 @@ Examples:
 | Outside business hours | `422 Unprocessable Entity` |
 | Incomplete booking context | `422 Unprocessable Entity` |
 
+The React interface is being designed to translate API failures into user-facing error states rather than exposing internal exceptions directly.
+
 ---
 
 ## Testing
 
-The project uses Pytest and FastAPI testing utilities.
+The backend uses Pytest and FastAPI testing utilities.
 
-Run the full suite:
+Run the full backend suite:
 
 ```bash
 python -m pytest -v
 ```
 
-Current result:
+Latest full regression before Phase 10:
 
 ```text
-209 passed
-1 warning
+234 passed
 0 failures
 ```
 
@@ -812,13 +1302,46 @@ AI Core
 ├── Business Tools
 └── Tool Execution
 
+LLM Boundary
+├── LLM Configuration
+├── Provider Abstraction
+├── Provider Factory
+├── Structured Output
+├── LLM Interpreter
+├── Message Interpreter
+├── OpenAI Provider
+├── Fallback Behavior
+└── Orchestrator Integration
+
 Integration
 ├── Conversation → Booking Engine
 ├── AI Decision → Business Tool
+├── Message Interpreter → AI Core
 └── Full Regression Suite
 ```
 
-The full regression suite is run after booking, scheduling, conversation, AI Core, and integration changes.
+During Phase 10, focused backend tests after adding development CORS support produced:
+
+```text
+17 passed
+0 failures
+```
+
+Frontend linting:
+
+```bash
+cd frontend
+npm run lint
+```
+
+Current result:
+
+```text
+PASS
+0 ESLint errors
+```
+
+Frontend component and interaction testing will be introduced when the chat behavior becomes sufficiently stable to justify the additional testing setup.
 
 ---
 
@@ -826,26 +1349,34 @@ The full regression suite is run after booking, scheduling, conversation, AI Cor
 
 | Technology | Purpose |
 |---|---|
-| Python 3.13 | Core language |
+| Python 3.13 | Backend core language |
 | FastAPI | REST API |
 | MongoDB | NoSQL database |
 | PyMongo | MongoDB driver |
-| Pydantic | Data validation |
-| Pytest | Automated testing |
+| Pydantic | Data and structured-output validation |
+| Pytest | Backend automated testing |
 | Uvicorn | ASGI development server |
+| OpenAI Python SDK | Optional LLM provider integration |
+| React 19 | Chat interface |
+| Vite 8 | Frontend development and build tooling |
+| ESLint | Frontend static analysis |
 | Git / GitHub | Version control |
 
 ### Planned
 
-- LLM API
-- Structured LLM outputs
-- Controlled LLM tool calling
-- Guardrails
+- React chat API integration completion
+- Message rendering
+- Loading and error states
+- Conversation history UX
+- Booking context presentation
+- Frontend component testing
+- API mocking / interaction testing
 - Docker
 - GitHub Actions
+- Continuous Integration
 - Logging
 - Deployment preparation
-- Optional React dashboard
+- Security hardening
 
 ---
 
@@ -943,24 +1474,148 @@ No AI component writes directly to MongoDB.
 
 ### Phase 9 — LLM Integration
 
-**Next**
+**Completed**
 
-Planned:
+Implemented:
 
-- LLM API integration
-- Structured model outputs
-- Controlled tool calling
-- Prompt design
-- Guardrails
-- Deterministic backend validation after model decisions
-- Fallback handling for invalid or unsupported model output
+- LLM provider abstraction
+- Structured LLM output
+- LLM interpreter
+- Message interpreter boundary
+- OpenAI provider
+- OpenAI Python SDK integration
+- Environment-based configuration
+- Provider factory
+- LLM-specific error handling
+- Integration with the orchestrator
+- Integration with conversation processing
+- FastAPI provider dependency
+- Deterministic fallback
 - Tests around the LLM boundary
 
-The LLM will interpret natural language and request approved tools while deterministic application logic remains responsible for validation and execution.
+Phase 9 preserved the existing deterministic system.
 
-### Phase 10 — Production Engineering
+Final architecture:
+
+```text
+User Message
+      ↓
+LLM / Deterministic Interpreter
+      ↓
+Intent + ExtractedEntities
+      ↓
+Entity Resolution
+      ↓
+BookingContext
+      ↓
+Decision Engine
+      ↓
+BusinessAction
+      ↓
+Tool Executor
+      ↓
+Business Tools / Booking Engine
+      ↓
+Repositories
+      ↓
+MongoDB
+```
+
+The LLM cannot:
+
+```text
+Access MongoDB
+Execute bookings directly
+Choose arbitrary backend operations
+Bypass Tool Executor
+Bypass Booking Engine
+Persist unvalidated operations
+```
+
+LLM support remains disabled by default:
+
+```text
+LLM_ENABLED=false
+```
+
+The deterministic AI Core therefore remains fully operational without an external model.
+
+### Phase 10 — React Chat Interface & AI Booking Agent Simulation
+
+**In Progress**
+
+The objective is to create the first real user interface for interacting with the existing AI Booking Agent.
+
+The phase deliberately begins with a focused chat experience rather than a large administrative dashboard.
+
+Current progress:
+
+- React 19 + Vite 8 project created
+- ESLint configured
+- Responsive chat shell implemented
+- Message input and Send interaction shell implemented
+- FastAPI and React development servers verified
+- CORS configured for the local React origin
+- Focused backend regression passed
+- Frontend environment configuration added
+- Local frontend `.env` excluded from Git
+- Conversation API client created
+- `createConversation()` implemented
+- `sendMessage()` implemented
+- `getConversationMessages()` implemented
+- Frontend lint passes
+
+Current integration target:
+
+```text
+User
+  ↓
+React Chat Interface
+  ↓
+Create Conversation
+  ↓
+Send Message
+  ↓
+FastAPI
+  ↓
+Conversation System
+  ↓
+AI Core / LLM Boundary
+  ↓
+Store Assistant Response
+  ↓
+Load Conversation History
+  ↓
+Render Chat Messages
+```
+
+Planned Phase 10 expansion:
+
+- Connect `App.jsx` state to the conversation API
+- Render user and assistant message bubbles
+- Loading state
+- Error state
+- New Conversation
+- Conversation history
+- Booking context panel
+- Current intent
+- Selected service
+- Selected staff
+- Customer information
+- Booking date and time
+- Booking status
+- Availability results
+- Component and interaction testing
+
+React remains a presentation layer.
+
+No booking logic will be duplicated in the frontend.
+
+### Production Engineering
 
 **Planned**
+
+After the conversational interface reaches a stable state:
 
 - Docker
 - GitHub Actions
@@ -968,8 +1623,8 @@ The LLM will interpret natural language and request approved tools while determi
 - Security validation
 - Logging
 - Deployment preparation
-
-A React dashboard may be added as a presentation layer without changing backend business rules.
+- Production configuration
+- Frontend production build strategy
 
 ---
 
@@ -979,6 +1634,7 @@ A React dashboard may be added as a presentation layer without changing backend 
 
 ```bash
 git clone https://github.com/Danakaabi/ai-booking-agent-.git
+
 cd ai-booking-agent
 ```
 
@@ -986,8 +1642,23 @@ cd ai-booking-agent
 
 ```bash
 python -m venv .venv
+
 source .venv/bin/activate
 ```
+
+### Backend Environment
+
+Use the root `.env.example` as the configuration reference.
+
+LLM integration is optional and disabled by default.
+
+Example:
+
+```text
+LLM_ENABLED=false
+```
+
+A real OpenAI API key must never be committed to Git.
 
 ### MongoDB
 
@@ -1005,10 +1676,18 @@ Expected:
 
 MongoDB must be running before repository and integration tests.
 
-### Run API
+### Run Backend API
+
+From the project root:
 
 ```bash
 uvicorn api.main:app --reload
+```
+
+Backend:
+
+```text
+http://127.0.0.1:8000
 ```
 
 Swagger documentation:
@@ -1017,18 +1696,76 @@ Swagger documentation:
 http://127.0.0.1:8000/docs
 ```
 
-### Run Tests
+Health check:
+
+```text
+http://127.0.0.1:8000/health
+```
+
+### Run Backend Tests
 
 ```bash
 python -m pytest -v
 ```
 
-Current expected result:
+Latest full regression before Phase 10:
 
 ```text
-209 passed
-1 warning
+234 passed
 0 failures
+```
+
+### Frontend Setup
+
+From the project root:
+
+```bash
+cd frontend
+npm install
+```
+
+Create the local frontend environment from the example:
+
+```bash
+cp .env.example .env
+```
+
+The development configuration currently uses:
+
+```text
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+
+The frontend environment must never contain an OpenAI API key or database credentials.
+
+### Run React Frontend
+
+```bash
+npm run dev
+```
+
+Frontend:
+
+```text
+http://localhost:5173
+```
+
+During development, both applications run independently:
+
+```text
+React
+localhost:5173
+
+        ↓ HTTP
+
+FastAPI
+127.0.0.1:8000
+```
+
+### Frontend Lint
+
+```bash
+npm run lint
 ```
 
 ---
@@ -1038,71 +1775,101 @@ Current expected result:
 ```text
 Foundation                         ✓
 FastAPI + MongoDB                  ✓
-Booking System                     ✓
-Availability & Scheduling          ✓
-Customers & Staff                  ✓
-Booking Engine                     ✓
-Conversation System                ✓
-Intent Detection                   ✓
-Entity Extraction & Resolution     ✓
-Context Preparation                ✓
-Missing Information                ✓
-Decision Engine                    ✓
-Response Generation                ✓
-AI Orchestration                   ✓
-Controlled Tool Execution          ✓
-AI Business Tools                  ✓
-Multi-Turn Availability            ✓
-Full Regression                    ✓
-
-LLM Integration                    → NEXT
-Production Engineering
-Dashboard / UI                     → LATER
+Booking System                    ✓
+Availability & Scheduling         ✓
+Customers & Staff                 ✓
+Booking Engine                    ✓
+Conversation System               ✓
+Intent Detection                  ✓
+Entity Extraction & Resolution    ✓
+Context Preparation               ✓
+Missing Information               ✓
+Decision Engine                   ✓
+Response Generation               ✓
+AI Orchestration                  ✓
+Controlled Tool Execution         ✓
+AI Business Tools                 ✓
+Multi-Turn Availability           ✓
+LLM Provider Abstraction          ✓
+Structured LLM Output             ✓
+OpenAI Provider                   ✓
+Deterministic LLM Fallback        ✓
+LLM Boundary Tests                ✓
+Backend Full Regression           ✓
+React Foundation                  ✓
+Chat Shell                        ✓
+Frontend API Layer                ✓
+React → FastAPI Chat Integration  → CURRENT
+Chat Message Rendering            → NEXT
+Chat UX Expansion                 → LATER
+Production Engineering            → LATER
 ```
 
 The current objective is:
 
-> **Integrate an LLM at a controlled boundary while preserving deterministic backend validation and explicit tool execution.**
+> **Connect the React chat interface to the existing conversation API and complete the first end-to-end AI Booking Agent simulation without duplicating backend business logic.**
 
 ---
 
-## Target AI Architecture
+## Target Application Architecture
 
 ```text
-Client
-   ↓
+User
+  ↓
+React Chat Interface
+  ↓
 FastAPI
-   ↓
+  ↓
 Conversation System
-   ↓
-LLM Boundary
-   ↓
+  ↓
+Message Interpreter
+  ↓
+LLM / Deterministic Interpreter
+  ↓
 AI Core
-   ↓
+  ↓
+Decision Engine
+  ↓
 Controlled Business Tools
-   ↓
+  ↓
 Booking Engine
-   ↓
+  ↓
 Validation & Scheduling Rules
-   ↓
+  ↓
 Repositories
-   ↓
+  ↓
 MongoDB
 ```
 
-The AI layer will determine:
+The interpretation layer determines:
 
 - What does the user mean?
-- Which approved operation is needed?
+- Which entities are present?
 - What information is still missing?
-- Which controlled tool should be requested?
+
+The deterministic AI Core determines:
+
+- What is the active workflow?
+- Is the context complete?
+- Which approved business action is required?
+- Should the system ask the user for more information?
 
 The deterministic backend determines:
 
 - Is the operation allowed?
-- Is the context complete?
 - Does it satisfy booking rules?
-- How should it be executed?
+- Is the requested time available?
+- Does the selected staff member support the service?
+- Does the operation conflict with an existing booking?
+- How should the operation be executed?
+
+React determines:
+
+- What should be displayed?
+- What message did the user enter?
+- Is an API request in progress?
+- Should a loading or error state be rendered?
+- Which conversation history should be shown?
 
 The database persists only validated results.
 
@@ -1110,7 +1877,7 @@ The database persists only validated results.
 
 ## Why Backend-First?
 
-The project deliberately does not begin with an LLM.
+The project deliberately did not begin with an LLM or frontend.
 
 A booking agent must reliably answer questions such as:
 
@@ -1123,9 +1890,39 @@ A booking agent must reliably answer questions such as:
 - Can this booking be safely rescheduled?
 - Is the conversation context complete?
 
-These decisions should not depend on probabilistic model output.
+These decisions should not depend on probabilistic model output or frontend state.
 
-The LLM can therefore be introduced as an interpretation layer without becoming the authority for booking rules or persistence.
+The LLM can therefore operate as an interpretation layer without becoming the authority for booking rules or persistence.
+
+React can operate as a presentation layer without becoming the authority for business logic.
+
+This gives the project a clear separation:
+
+```text
+React
+      ↓
+Presentation
+
+LLM
+      ↓
+Interpretation
+
+AI Core
+      ↓
+Decision & Orchestration
+
+Booking Engine
+      ↓
+Business Rules
+
+Repositories
+      ↓
+Persistence
+
+MongoDB
+      ↓
+Stored State
+```
 
 ---
 
@@ -1144,10 +1941,81 @@ The LLM can therefore be introduced as an interpretation layer without becoming 
 - Explicit business-action routing
 - Controlled tool execution
 - Shared HTTP error mapping
+- LLM provider abstraction
+- Structured LLM outputs
+- Deterministic fallback behavior
+- LLM isolation from persistence
+- Frontend isolation from business logic
+- Dedicated frontend API layer
+- Minimal frontend dependencies
+- Environment-based configuration
+- Responsive design
+- Accessibility-conscious UI
 - Automated regression testing
-- Framework-independent business logic
+- Framework-independent backend business logic
 - No direct AI access to MongoDB
+- No direct React access to MongoDB
+- No direct React access to OpenAI
 - No secrets committed to Git
+
+---
+
+## Security Boundaries
+
+The system intentionally separates trust boundaries.
+
+### React
+
+React may:
+
+```text
+Send HTTP requests
+Render API responses
+Maintain UI state
+Collect user input
+```
+
+React may not:
+
+```text
+Access MongoDB
+Contain database credentials
+Contain OpenAI API keys
+Execute Booking Engine logic
+Bypass FastAPI
+```
+
+### LLM
+
+The LLM may:
+
+```text
+Interpret natural language
+Produce structured interpretation
+```
+
+The LLM may not:
+
+```text
+Access MongoDB
+Execute repositories
+Create bookings directly
+Choose arbitrary functions
+Bypass deterministic validation
+```
+
+### Backend
+
+FastAPI and the deterministic application layers remain responsible for:
+
+```text
+Validation
+Decision routing
+Controlled execution
+Booking rules
+Conflict detection
+Persistence
+```
 
 ---
 
@@ -1163,32 +2031,40 @@ The project is intended to evolve into a reusable AI booking agent for domains s
 - Appointment-based businesses
 
 ```text
-Web / Mobile / Chat / Dashboard
-              ↓
-      Conversation / AI Layer
-              ↓
-        Business Tools
-              ↓
-        Booking Engine
-              ↓
-          Scheduling
-              ↓
-           MongoDB
+Web / Mobile / Chat
+          ↓
+Conversation Interface
+          ↓
+LLM / Deterministic Interpretation
+          ↓
+AI Core
+          ↓
+Business Tools
+          ↓
+Booking Engine
+          ↓
+Scheduling
+          ↓
+MongoDB
 ```
 
-The same deterministic Booking Engine, conversation infrastructure, AI Core, and controlled tools can support multiple interfaces without duplicating business rules.
+The same deterministic Booking Engine, conversation infrastructure, AI Core, LLM boundary, and controlled tools can support multiple interfaces without duplicating business rules.
+
+A future administrative dashboard can be added independently from the conversational client.
 
 ---
 
 ## Project Philosophy
 
-> **AI should interpret and reason about the request.**
+> **AI should interpret the request.**
 >
 > **Conversation infrastructure should preserve context and state.**
 >
-> **Business logic should decide what is allowed.**
+> **Deterministic logic should decide what is allowed.**
 >
 > **Controlled tools should execute approved operations.**
+>
+> **React should present and interact with the system, not duplicate it.**
 >
 > **The database should persist only validated results.**
 
@@ -1196,5 +2072,5 @@ The same deterministic Booking Engine, conversation infrastructure, AI Core, and
 
 <p align="center">
   <strong>AI Booking Agent</strong><br>
-  Backend Engineering • Booking Systems • Scheduling • Conversation Systems • AI Agents • System Design
+  Backend Engineering • Booking Systems • Scheduling • Conversation Systems • LLM Integration • AI Agents • React • System Design
 </p>
